@@ -15,10 +15,15 @@ const int TOP_MARGIN = 50;
 @interface PentagoSubBoardViewController () {
     int subsquareNumber;
     int widthOfSubsquare;
+    
+    CGRect _gridFrame;
 }
 
 @property (nonatomic, strong) PentagoBrain *pBrain;
 @property (nonatomic, strong) UIImageView *gridImageView;
+@property (nonatomic) UIView *gridView;
+@property (nonatomic) CALayer *ballLayer;
+
 @property (nonatomic, strong) UITapGestureRecognizer *tapGest;
 
 @property (nonatomic) UISwipeGestureRecognizer *rightSwipe;
@@ -85,6 +90,7 @@ const int TOP_MARGIN = 50;
     if( (self = [super init]) == nil )
         return nil;
     subsquareNumber = position;
+
     // appFrame is the frame of the entire screen so that appFrame.size.width
     // and appFrame.size.height contain the width and the height of the screen, respectively.
     CGRect appFrame = [[UIScreen mainScreen] applicationFrame];
@@ -97,19 +103,21 @@ const int TOP_MARGIN = 50;
 
 -(void) didTapTheView: (UITapGestureRecognizer *) tapObject
 {
-    // p is the location of the tap in the coordinate system of this view-controller's view (not the view of the
-    // the view-controller that includes the subboards.)
-    NSLog(@"Did tap the %ld view", (long)[self.view tag] );
-    
-    CGPoint p = [tapObject locationInView:self.view];
-    int squareWidth = widthOfSubsquare / 3;
-    // The board is divided into nine equally sized squares and thus width = height.
-    UIImageView *iView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"redMarble.png"]];
-    iView.frame = CGRectMake((int) (p.x / squareWidth) * squareWidth,
-                             (int) (p.y / squareWidth) * squareWidth,
-                             squareWidth - BORDER_WIDTH / 3,
-                             squareWidth - BORDER_WIDTH / 3);
-    [self.view addSubview:iView];
+
+     // p is the location of the tap in the coordinate system of this view-controller's view (not the view of the
+     // the view-controller that includes the subboards.)
+     NSLog(@"Did tap the %ld view", (long)[self.view tag] );
+     
+     CGPoint p = [tapObject locationInView:self.view];
+     int squareWidth = widthOfSubsquare / 3;
+     // The board is divided into nine equally sized squares and thus width = height.
+     UIImageView *iView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"redMarble.png"]];
+     iView.frame = CGRectMake((int) (p.x / squareWidth) * squareWidth,
+     (int) (p.y / squareWidth) * squareWidth,
+     squareWidth - BORDER_WIDTH / 3,
+     squareWidth - BORDER_WIDTH / 3);
+     [self.view addSubview:iView];
+  
 }
 
 
@@ -145,25 +153,67 @@ const int TOP_MARGIN = 50;
     
 }
 
-
-
-- (void)viewDidLoad
+/*
+-(void) animationDidStop:(CAAnimation *)anim finished:(BOOL)flag
 {
-    [super viewDidLoad];
+    
+    CGPoint p = topLeftImageView.center; // hard-coded for demo only.
+    p.y += widthOfSubsquare / 3 * 2;
+    topLeftImageView.center = p;
+    
+    CABasicAnimation *rotate = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+    [rotate setFromValue:[NSNumber numberWithDouble:M_PI / 2.0]];
+    [rotate setToValue: [NSNumber numberWithDouble: 0]];
+    [rotate setDuration:1];
+    [rotate setTimingFunction:[CAMediaTimingFunction functionWithName: kCAMediaTimingFunctionEaseInEaseOut]];
+    [[topLeftImageView layer] addAnimation:rotate forKey:@"marble unroates"];
+}
+
+*/
+
+
+
+-(void)setUpGrid
+{
+    
     CGRect ivFrame = CGRectMake(0, 0, widthOfSubsquare, widthOfSubsquare);
     self.gridImageView.frame = ivFrame;
     UIImage *image = [UIImage imageNamed:@"grid.png"];
     [self.gridImageView setImage:image];
     [self.view addSubview:self.gridImageView];
-    [self.view addGestureRecognizer: self.tapGest];
-    [self.view addGestureRecognizer: self.leftSwipeGesture];
-    [self.view addGestureRecognizer: self.rightSwipeGesture];
+    
     [self.view setBackgroundColor:[UIColor blackColor]];
     
     CGRect viewFrame = CGRectMake( (BORDER_WIDTH + widthOfSubsquare) * (subsquareNumber % 2) + BORDER_WIDTH,
                                   (BORDER_WIDTH + widthOfSubsquare) * (subsquareNumber / 2) + BORDER_WIDTH + TOP_MARGIN,
                                   widthOfSubsquare, widthOfSubsquare);
     self.view.frame = viewFrame;
+}
+
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+
+    [self setUpGrid];
+  
+    [self.view setTag:subsquareNumber];
+
+    
+    float x = (BORDER_WIDTH + widthOfSubsquare) * (subsquareNumber % 2) + BORDER_WIDTH;
+    float y = (BORDER_WIDTH + widthOfSubsquare) * (subsquareNumber / 2) + BORDER_WIDTH + TOP_MARGIN;
+    NSLog(@"x = %f y = %f", x, y);
+/*
+    CGRect viewFrame = CGRectMake( (BORDER_WIDTH + widthOfSubsquare) * (subsquareNumber % 2) + BORDER_WIDTH,
+                                  (BORDER_WIDTH + widthOfSubsquare) * (subsquareNumber / 2) + BORDER_WIDTH + TOP_MARGIN,
+                                  widthOfSubsquare, widthOfSubsquare);
+    self.view.frame = viewFrame;
+ */
+    
+    [self.view addGestureRecognizer: self.tapGest];
+    [self.view addGestureRecognizer: self.leftSwipeGesture];
+    [self.view addGestureRecognizer: self.rightSwipeGesture];
+    
 }
 
 

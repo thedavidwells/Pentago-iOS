@@ -490,6 +490,7 @@
 				3E27FDC718B286CE00EAA085 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		3E27FDC818B286CE00EAA085 /* Build configuration list for PBXNativeTarget "PentagoStudentVersionTests" */ = {
 			isa = XCConfigurationList;
@@ -498,6 +499,7 @@
 				3E27FDCA18B286CE00EAA085 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

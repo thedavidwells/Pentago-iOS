@@ -10,6 +10,10 @@
 
 @interface PentagoBrain : NSObject
 
+
+@property (nonatomic) NSMutableArray *gameBoard;
+
+
 +(PentagoBrain *) sharedInstance;
 
 @end
