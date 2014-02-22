@@ -1,10 +1,10 @@
+//  PENTAGO
+//  PROJECT 3
+//  CS470 - Spring 2014
 //
-//  AppDelegate.h
-//  PentagoStudentVersion
-//
-//  Created by AAK on 2/17/14.
-//  Copyright (c) 2014 Ali Kooshesh. All rights reserved.
-//
+//  CREATED BY DAVID WELLS
+//  Copyright (c) 2014 David Wells. All rights reserved.
+//  All code not provided by Professor Kooshesh is the sole work of David Wells for CS470 at Sonoma State University.
 
 #import <UIKit/UIKit.h>
 

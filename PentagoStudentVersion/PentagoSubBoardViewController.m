@@ -1,10 +1,10 @@
+//  PENTAGO
+//  PROJECT 3
+//  CS470 - Spring 2014
 //
-//  PentagoSubBoardViewController.m
-//  PentagoStudentVersion
-//
-//  Created by AAK on 2/17/14.
-//  Copyright (c) 2014 Ali Kooshesh. All rights reserved.
-//
+//  CREATED BY DAVID WELLS
+//  Copyright (c) 2014 David Wells. All rights reserved.
+//  All code not provided by Professor Kooshesh is the sole work of David Wells for CS470 at Sonoma State University.
 
 #import "PentagoSubBoardViewController.h"
 #import "PentagoBrain.h"
@@ -20,6 +20,9 @@ const int TOP_MARGIN = 50;
 @property (nonatomic, strong) PentagoBrain *pBrain;
 @property (nonatomic, strong) UIImageView *gridImageView;
 @property (nonatomic, strong) UITapGestureRecognizer *tapGest;
+
+@property (nonatomic) UISwipeGestureRecognizer *rightSwipe;
+@property (nonatomic) UISwipeGestureRecognizer *leftSwipe;
 
 -(void) didTapTheView: (UITapGestureRecognizer *) tapObject;
 
@@ -38,6 +41,27 @@ const int TOP_MARGIN = 50;
     }
     return _tapGest;
 }
+
+-(UISwipeGestureRecognizer *) rightSwipeGesture
+{
+
+    self.rightSwipe = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(didSwipeRight:)];
+    [self.rightSwipe setDirection:UISwipeGestureRecognizerDirectionRight];
+    [self.view addGestureRecognizer:self.rightSwipe];
+    
+    return _rightSwipe;
+}
+
+-(UISwipeGestureRecognizer *) leftSwipeGesture
+{
+
+    self.leftSwipe = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(didSwipeLeft:)];
+    [self.leftSwipe setDirection:UISwipeGestureRecognizerDirectionLeft];
+    [self.view addGestureRecognizer:self.leftSwipe];
+    
+    return _leftSwipe;
+}
+
 
 -(PentagoBrain *) pBrain
 {
@@ -65,6 +89,8 @@ const int TOP_MARGIN = 50;
     // and appFrame.size.height contain the width and the height of the screen, respectively.
     CGRect appFrame = [[UIScreen mainScreen] applicationFrame];
     widthOfSubsquare = ( appFrame.size.width - 3 * BORDER_WIDTH ) / 2;
+    
+
     return self;
 }
 
@@ -73,6 +99,7 @@ const int TOP_MARGIN = 50;
 {
     // p is the location of the tap in the coordinate system of this view-controller's view (not the view of the
     // the view-controller that includes the subboards.)
+    NSLog(@"Did tap the %ld view", (long)[self.view tag] );
     
     CGPoint p = [tapObject locationInView:self.view];
     int squareWidth = widthOfSubsquare / 3;
@@ -85,6 +112,41 @@ const int TOP_MARGIN = 50;
     [self.view addSubview:iView];
 }
 
+
+
+-(void) didSwipeRight: (UISwipeGestureRecognizer *) recongizer
+{
+    NSLog(@"Did swipe right in the the %ld view", (long)[self.view tag] );
+    
+    //  animationActive = YES;
+    CABasicAnimation *rotate = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+    [rotate setFromValue:[NSNumber numberWithDouble:0.0]];
+    [rotate setToValue: [NSNumber numberWithDouble: M_PI / 2.0]];
+    [rotate setDuration:1.5];
+    [rotate setTimingFunction:[CAMediaTimingFunction functionWithName: kCAMediaTimingFunctionEaseInEaseOut]];
+    [rotate setDelegate:self];
+    
+    [[self.view layer] addAnimation:rotate forKey:@"clockwise rotation"];
+}
+
+-(void) didSwipeLeft: (UISwipeGestureRecognizer *) recongizer
+{
+    NSLog(@"Did swipe left in the the %ld view", (long)[self.view tag] );
+    
+    //  animationActive = YES;
+    CABasicAnimation *rotate = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+    [rotate setFromValue:[NSNumber numberWithDouble:0.0]];
+    [rotate setToValue: [NSNumber numberWithDouble: M_PI / -2.0]];
+    [rotate setDuration:1.5];
+    [rotate setTimingFunction:[CAMediaTimingFunction functionWithName: kCAMediaTimingFunctionEaseInEaseOut]];
+    [rotate setDelegate:self];
+    
+    [[self.view layer] addAnimation:rotate forKey:@"counterclockwise rotation"];
+    
+}
+
+
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -94,6 +156,8 @@ const int TOP_MARGIN = 50;
     [self.gridImageView setImage:image];
     [self.view addSubview:self.gridImageView];
     [self.view addGestureRecognizer: self.tapGest];
+    [self.view addGestureRecognizer: self.leftSwipeGesture];
+    [self.view addGestureRecognizer: self.rightSwipeGesture];
     [self.view setBackgroundColor:[UIColor blackColor]];
     
     CGRect viewFrame = CGRectMake( (BORDER_WIDTH + widthOfSubsquare) * (subsquareNumber % 2) + BORDER_WIDTH,
