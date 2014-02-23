@@ -13,9 +13,14 @@
 @interface PentagoViewController ()
 @property (nonatomic, strong) PentagoBrain *pBrain;
 @property (nonatomic, strong) NSMutableArray *subViewControllers;
+
+
+
 @end
 
 @implementation PentagoViewController
+
+UILabel *label;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -55,7 +60,6 @@
     [self currentGameStateLabel];
     
     
-    
 }
 
 -(void)setGameTitleLabel
@@ -76,12 +80,24 @@
     
     CGRect frame = [[UIScreen mainScreen] applicationFrame];
     CGFloat screenWidth = frame.size.width;
-    UILabel *gameStateLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 370, screenWidth, 50)];
-    gameStateLabel.text = @"Get 5 in a row to win!";
-    gameStateLabel.textColor = [UIColor whiteColor];
-    gameStateLabel.textAlignment = NSTextAlignmentCenter;
-    [self.view addSubview:gameStateLabel];
+    label = [[UILabel alloc] initWithFrame:CGRectMake(0, 370, screenWidth, 50)];
+    label.text = @"Get 5 in a row to win!";
+    label.textColor = [UIColor whiteColor];
+    label.textAlignment = NSTextAlignmentCenter;
+    [self.view addSubview:label];
     
+}
+
++(void)changeGameStateLabel
+{
+    if ([[PentagoBrain sharedInstance ]currentPlayer] == player1) {
+        label.text = @"Player 1, place your donut!";
+    }
+    else  {
+        label.text = @"Player 2, place your donut!";
+    }
+
+
 }
 
 

@@ -10,4 +10,8 @@
 
 @interface PentagoViewController : UIViewController
 
+@property(nonatomic) UILabel *gameStateLabel;
++(void)changeGameStateLabel;
+
+
 @end

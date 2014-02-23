@@ -18,6 +18,8 @@ typedef NS_ENUM(int, player){
 @property (nonatomic) NSMutableArray *gameBoard;
 @property (nonatomic) int currentPlayer;
 
+
+
 -(void)switchPlayers;
 -(void)createGridArray: (UIView *)view;
 +(PentagoBrain *) sharedInstance;

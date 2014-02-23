@@ -7,8 +7,12 @@
 //  All code not provided by Professor Kooshesh is the sole work of David Wells for CS470 at Sonoma State University.
 
 #import "PentagoBrain.h"
+#import "PentagoViewController.h"
+
+
 
 @implementation PentagoBrain
+
 
 
 
@@ -44,11 +48,15 @@
 {
     if (self.currentPlayer == player1) {
         self.currentPlayer = player2;
+        
     }
     else if (self.currentPlayer == player2){
         self.currentPlayer = player1;
     }
 }
+
+
+
 
 
 @end

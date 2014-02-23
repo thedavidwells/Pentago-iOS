@@ -8,6 +8,7 @@
 
 #import "PentagoSubBoardViewController.h"
 #import "PentagoBrain.h"
+#import "PentagoViewController.h"
 
 const int BORDER_WIDTH = 10;
 const int TOP_MARGIN = 50;
@@ -22,6 +23,7 @@ const int TOP_MARGIN = 50;
 @property(nonatomic) CALayer *blueLayer;
 
 @property (nonatomic, strong) PentagoBrain *pBrain;
+@property(nonatomic) PentagoViewController *pView;
 @property (nonatomic, strong) UIImageView *gridImageView;
 @property (nonatomic) UIView *gridView;
 @property (nonatomic) CALayer *ballLayer;
@@ -193,6 +195,8 @@ const int TOP_MARGIN = 50;
     [self.gridView.layer addSublayer:self.ballLayer];
     
     [self.pBrain switchPlayers];
+    [PentagoViewController changeGameStateLabel];
+    
 }
 
 
