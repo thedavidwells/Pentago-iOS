@@ -19,6 +19,8 @@ const int TOP_MARGIN = 50;
     CGRect _gridFrame;
 }
 
+@property(nonatomic) CALayer *blueLayer;
+
 @property (nonatomic, strong) PentagoBrain *pBrain;
 @property (nonatomic, strong) UIImageView *gridImageView;
 @property (nonatomic) UIView *gridView;
@@ -47,23 +49,23 @@ const int TOP_MARGIN = 50;
     return _tapGest;
 }
 
--(UISwipeGestureRecognizer *) rightSwipeGesture
+-(UISwipeGestureRecognizer *) rightSwipe
 {
 
-    self.rightSwipe = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(didSwipeRight:)];
-    [self.rightSwipe setDirection:UISwipeGestureRecognizerDirectionRight];
-    [self.view addGestureRecognizer:self.rightSwipe];
-    
+    if( !_rightSwipe ) {
+        _rightSwipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(didSwipeRight:)];
+        [_rightSwipe setDirection:UISwipeGestureRecognizerDirectionRight];
+    }
     return _rightSwipe;
 }
 
--(UISwipeGestureRecognizer *) leftSwipeGesture
+-(UISwipeGestureRecognizer *) leftSwipe
 {
 
-    self.leftSwipe = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(didSwipeLeft:)];
-    [self.leftSwipe setDirection:UISwipeGestureRecognizerDirectionLeft];
-    [self.view addGestureRecognizer:self.leftSwipe];
-    
+    if( !_leftSwipe ) {
+        _leftSwipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(didSwipeLeft:)];
+        [_leftSwipe setDirection:UISwipeGestureRecognizerDirectionLeft];
+    }
     return _leftSwipe;
 }
 
@@ -104,20 +106,23 @@ const int TOP_MARGIN = 50;
 -(void) didTapTheView: (UITapGestureRecognizer *) tapObject
 {
 
-     // p is the location of the tap in the coordinate system of this view-controller's view (not the view of the
-     // the view-controller that includes the subboards.)
-     NSLog(@"Did tap the %ld view", (long)[self.view tag] );
-     
-     CGPoint p = [tapObject locationInView:self.view];
-     int squareWidth = widthOfSubsquare / 3;
-     // The board is divided into nine equally sized squares and thus width = height.
-     UIImageView *iView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"redMarble.png"]];
-     iView.frame = CGRectMake((int) (p.x / squareWidth) * squareWidth,
-     (int) (p.y / squareWidth) * squareWidth,
-     squareWidth - BORDER_WIDTH / 3,
-     squareWidth - BORDER_WIDTH / 3);
-     [self.view addSubview:iView];
-  
+    // p is the location of the tap in the coordinate system of this view-controller's view (not the view of the
+    // the view-controller that includes the subboards.)
+    
+    CGPoint p = [tapObject locationInView:self.gridView];
+    int squareWidth = widthOfSubsquare / 3;
+    // The board is divided into nine equally sized squares and thus width = height.
+    UIImageView *iView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"redMarble.png"]];
+    iView.frame = CGRectMake((int) (p.x / squareWidth) * squareWidth,
+                             (int) (p.y / squareWidth) * squareWidth,
+                             squareWidth,
+                             squareWidth);
+    
+    self.ballLayer = [CALayer layer];
+    [self.ballLayer addSublayer: iView.layer];
+    self.ballLayer.frame = CGRectMake(0, 0, widthOfSubsquare, widthOfSubsquare);
+    self.ballLayer.affineTransform = CGAffineTransformMakeRotation(0.0);
+    [self.gridView.layer addSublayer:self.ballLayer];
 }
 
 
@@ -125,31 +130,28 @@ const int TOP_MARGIN = 50;
 -(void) didSwipeRight: (UISwipeGestureRecognizer *) recongizer
 {
     NSLog(@"Did swipe right in the the %ld view", (long)[self.view tag] );
+    CGAffineTransform currTransform = self.gridView.layer.affineTransform;
+    [UIView animateWithDuration:1 animations:^ {
+        CGAffineTransform newTransform = CGAffineTransformConcat(currTransform, CGAffineTransformMakeRotation(M_PI/2));
+        self.gridView.layer.affineTransform = newTransform;
+    }];
     
-    //  animationActive = YES;
-    CABasicAnimation *rotate = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
-    [rotate setFromValue:[NSNumber numberWithDouble:0.0]];
-    [rotate setToValue: [NSNumber numberWithDouble: M_PI / 2.0]];
-    [rotate setDuration:1.5];
-    [rotate setTimingFunction:[CAMediaTimingFunction functionWithName: kCAMediaTimingFunctionEaseInEaseOut]];
-    [rotate setDelegate:self];
+    [self.view bringSubviewToFront:self.gridView];
+    [self.view addGestureRecognizer:self.rightSwipe];
     
-    [[self.view layer] addAnimation:rotate forKey:@"clockwise rotation"];
 }
 
 -(void) didSwipeLeft: (UISwipeGestureRecognizer *) recongizer
 {
     NSLog(@"Did swipe left in the the %ld view", (long)[self.view tag] );
+    CGAffineTransform currTransform = self.gridView.layer.affineTransform;
+    [UIView animateWithDuration:1 animations:^ {
+        CGAffineTransform newTransform = CGAffineTransformConcat(currTransform, CGAffineTransformMakeRotation(M_PI/-2));
+        self.gridView.layer.affineTransform = newTransform;
+    }];
     
-    //  animationActive = YES;
-    CABasicAnimation *rotate = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
-    [rotate setFromValue:[NSNumber numberWithDouble:0.0]];
-    [rotate setToValue: [NSNumber numberWithDouble: M_PI / -2.0]];
-    [rotate setDuration:1.5];
-    [rotate setTimingFunction:[CAMediaTimingFunction functionWithName: kCAMediaTimingFunctionEaseInEaseOut]];
-    [rotate setDelegate:self];
-    
-    [[self.view layer] addAnimation:rotate forKey:@"counterclockwise rotation"];
+    [self.view bringSubviewToFront:self.gridView];
+    [self.view addGestureRecognizer:self.leftSwipe];
     
 }
 
@@ -173,6 +175,15 @@ const int TOP_MARGIN = 50;
 
 
 
+- (IBAction)buttonTapped:(id)sender {
+    CGAffineTransform currTransform = self.blueLayer.affineTransform;
+    CGAffineTransform newTransform = CGAffineTransformConcat(currTransform, CGAffineTransformMakeRotation(M_PI/2));
+    self.blueLayer.affineTransform = newTransform;
+    
+}
+
+
+
 -(void)setUpGrid
 {
     
@@ -188,32 +199,46 @@ const int TOP_MARGIN = 50;
                                   (BORDER_WIDTH + widthOfSubsquare) * (subsquareNumber / 2) + BORDER_WIDTH + TOP_MARGIN,
                                   widthOfSubsquare, widthOfSubsquare);
     self.view.frame = viewFrame;
+    [self.view addGestureRecognizer: self.tapGest];
+    [self.view addGestureRecognizer: self.leftSwipe];
+    [self.view addGestureRecognizer: self.rightSwipe];
+}
+
+-(void)setUpGridView
+{
+    //widthOfSubsquare  = 145;
+    
+    _gridFrame = CGRectMake(0, 0, widthOfSubsquare, widthOfSubsquare);
+    self.gridView = [[UIView alloc] initWithFrame: _gridFrame];
+    [self.gridView addGestureRecognizer:self.rightSwipe];
+    [self.gridView addGestureRecognizer:self.leftSwipe];
+    [self.view addSubview: self.gridView];
+    
+    self.gridImageView.frame = CGRectMake(0, 0, 145, 145);
+    
+    UIImage *image = [UIImage imageNamed:@"grid.png"];
+    [self.gridImageView setImage:image];
+    [self.gridView addSubview:self.gridImageView];
+    [self.gridView addGestureRecognizer: self.tapGest];
+    [self.gridView setBackgroundColor:[UIColor blackColor]];
+    
+    
+    
+    CGRect viewFrame = CGRectMake( (BORDER_WIDTH + widthOfSubsquare) * (subsquareNumber % 2) + BORDER_WIDTH,
+                                  (BORDER_WIDTH + widthOfSubsquare) * (subsquareNumber / 2) + BORDER_WIDTH + TOP_MARGIN,
+                                  widthOfSubsquare, widthOfSubsquare);
+    self.view.frame = viewFrame;
+    
 }
 
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [self setUpGridView];
+    
 
-    [self setUpGrid];
-  
-    [self.view setTag:subsquareNumber];
-
-    
-    float x = (BORDER_WIDTH + widthOfSubsquare) * (subsquareNumber % 2) + BORDER_WIDTH;
-    float y = (BORDER_WIDTH + widthOfSubsquare) * (subsquareNumber / 2) + BORDER_WIDTH + TOP_MARGIN;
-    NSLog(@"x = %f y = %f", x, y);
-/*
-    CGRect viewFrame = CGRectMake( (BORDER_WIDTH + widthOfSubsquare) * (subsquareNumber % 2) + BORDER_WIDTH,
-                                  (BORDER_WIDTH + widthOfSubsquare) * (subsquareNumber / 2) + BORDER_WIDTH + TOP_MARGIN,
-                                  widthOfSubsquare, widthOfSubsquare);
-    self.view.frame = viewFrame;
- */
-    
-    [self.view addGestureRecognizer: self.tapGest];
-    [self.view addGestureRecognizer: self.leftSwipeGesture];
-    [self.view addGestureRecognizer: self.rightSwipeGesture];
-    
 }
 
 
