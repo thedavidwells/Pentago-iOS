@@ -27,6 +27,8 @@
 		3E27FDD718B288BE00EAA085 /* redMarble.png in Resources */ = {isa = PBXBuildFile; fileRef = 3E27FDD418B288BE00EAA085 /* redMarble.png */; };
 		3E27FDD818B288BE00EAA085 /* greenMarble.png in Resources */ = {isa = PBXBuildFile; fileRef = 3E27FDD518B288BE00EAA085 /* greenMarble.png */; };
 		3E27FDD918B288BE00EAA085 /* grid.png in Resources */ = {isa = PBXBuildFile; fileRef = 3E27FDD618B288BE00EAA085 /* grid.png */; };
+		52F0A0EF18B9E57F003834C4 /* donut_chocolate.png in Resources */ = {isa = PBXBuildFile; fileRef = 52F0A0ED18B9E57F003834C4 /* donut_chocolate.png */; };
+		52F0A0F018B9E57F003834C4 /* donut_strawberry.png in Resources */ = {isa = PBXBuildFile; fileRef = 52F0A0EE18B9E57F003834C4 /* donut_strawberry.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,6 +70,8 @@
 		3E27FDD418B288BE00EAA085 /* redMarble.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redMarble.png; sourceTree = "<group>"; };
 		3E27FDD518B288BE00EAA085 /* greenMarble.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = greenMarble.png; sourceTree = "<group>"; };
 		3E27FDD618B288BE00EAA085 /* grid.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grid.png; sourceTree = "<group>"; };
+		52F0A0ED18B9E57F003834C4 /* donut_chocolate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = donut_chocolate.png; sourceTree = "<group>"; };
+		52F0A0EE18B9E57F003834C4 /* donut_strawberry.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = donut_strawberry.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -147,6 +151,8 @@
 		3E27FD9D18B286CE00EAA085 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				52F0A0ED18B9E57F003834C4 /* donut_chocolate.png */,
+				52F0A0EE18B9E57F003834C4 /* donut_strawberry.png */,
 				3E27FDD418B288BE00EAA085 /* redMarble.png */,
 				3E27FDD518B288BE00EAA085 /* greenMarble.png */,
 				3E27FDD618B288BE00EAA085 /* grid.png */,
@@ -256,6 +262,8 @@
 				3E27FDA118B286CE00EAA085 /* InfoPlist.strings in Resources */,
 				3E27FDD718B288BE00EAA085 /* redMarble.png in Resources */,
 				3E27FDD818B288BE00EAA085 /* greenMarble.png in Resources */,
+				52F0A0EF18B9E57F003834C4 /* donut_chocolate.png in Resources */,
+				52F0A0F018B9E57F003834C4 /* donut_strawberry.png in Resources */,
 				3E27FDAA18B286CE00EAA085 /* Main.storyboard in Resources */,
 				3E27FDD918B288BE00EAA085 /* grid.png in Resources */,
 			);

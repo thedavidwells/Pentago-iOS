@@ -10,10 +10,16 @@
 
 @interface PentagoBrain : NSObject
 
+typedef NS_ENUM(int, player){
+    player1,
+    player2
+};
 
 @property (nonatomic) NSMutableArray *gameBoard;
+@property (nonatomic) int currentPlayer;
 
-
+-(void)switchPlayers;
+-(void)createGridArray: (UIView *)view;
 +(PentagoBrain *) sharedInstance;
 
 @end

@@ -47,8 +47,9 @@ const int TOP_MARGIN = 50;
     [super viewDidLoad];
     
     [self setUpGridView];
+    [self initPositionArray];
     
-    
+    [self.pBrain createGridArray:self.view];
 }
 
 
@@ -78,6 +79,14 @@ const int TOP_MARGIN = 50;
                                   widthOfSubsquare, widthOfSubsquare);
     self.view.frame = viewFrame;
     
+}
+
+
+-(void)initPositionArray
+{
+    if (self.positionArray == nil) {
+        self.positionArray = [[NSMutableArray alloc] init];
+    }
 }
 
 
@@ -156,19 +165,81 @@ const int TOP_MARGIN = 50;
     CGPoint p = [tapObject locationInView:self.gridView];
     int squareWidth = widthOfSubsquare / 3;
     // The board is divided into nine equally sized squares and thus width = height.
-    UIImageView *iView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"redMarble.png"]];
+    UIImageView *iView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"donut_chocolate.png"]];
+    
+    if (self.pBrain.currentPlayer == player1) {
+        iView.image = [UIImage imageNamed:@"donut_strawberry.png"];
+        NSLog(@"Player 1's turn");
+    }
+    else if (self.pBrain.currentPlayer == player2){
+        iView.image = [UIImage imageNamed:@"donut_chocolate.png"];
+        NSLog(@"Player 2's turn");
+    }
+
     iView.frame = CGRectMake((int) (p.x / squareWidth) * squareWidth,
                              (int) (p.y / squareWidth) * squareWidth,
                              squareWidth,
                              squareWidth);
+    
+    NSLog(@"p.x value: %f, p.y value: %f", p.x, p.y);
+    
+    [self determineArrayPosition:p];
+    
     
     self.ballLayer = [CALayer layer];
     [self.ballLayer addSublayer: iView.layer];
     self.ballLayer.frame = CGRectMake(0, 0, widthOfSubsquare, widthOfSubsquare);
     self.ballLayer.affineTransform = CGAffineTransformMakeRotation(0.0);
     [self.gridView.layer addSublayer:self.ballLayer];
+    
+    [self.pBrain switchPlayers];
 }
 
+
+-(void)determineArrayPosition: (CGPoint)point
+{
+    // Column 1
+    if (point.x < 49) {
+        if ( point.y < 49) {
+            NSLog(@"array index 0");
+            // [self.positionArray addObject: ]
+        }
+        else if ( point.y < 96) {
+            NSLog(@"array index 3");
+        }
+        else if ( point.y < 145) {
+            NSLog(@"array index 6");
+        }
+    }
+    
+    // Column 2
+    else if (point.x < 96){
+        if ( point.y < 49) {
+            NSLog(@"array index 1");
+        }
+        else if ( point.y < 96) {
+            NSLog(@"array index 4");
+        }
+        else if ( point.y < 145) {
+            NSLog(@"array index 7");
+        }
+    }
+    
+    // Column 3
+    else if (point.x < 145){
+        if ( point.y < 49) {
+            NSLog(@"array index 2");
+        }
+        else if ( point.y < 96) {
+            NSLog(@"array index 5");
+        }
+        else if ( point.y < 145) {
+            NSLog(@"array index 8");
+        }
+    }
+    
+    
+}
 
 
 -(void) didSwipeRight: (UISwipeGestureRecognizer *) recongizer
