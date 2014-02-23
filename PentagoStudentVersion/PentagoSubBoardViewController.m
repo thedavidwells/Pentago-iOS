@@ -35,7 +35,51 @@ const int TOP_MARGIN = 50;
 
 @end
 
+
+
+
 @implementation PentagoSubBoardViewController
+
+
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    
+    [self setUpGridView];
+    
+    
+}
+
+
+
+
+-(void)setUpGridView
+{
+    
+    _gridFrame = CGRectMake(0, 0, widthOfSubsquare, widthOfSubsquare);
+    self.gridView = [[UIView alloc] initWithFrame: _gridFrame];
+    [self.gridView addGestureRecognizer:self.rightSwipe];
+    [self.gridView addGestureRecognizer:self.leftSwipe];
+    [self.view addSubview: self.gridView];
+    
+    self.gridImageView.frame = CGRectMake(0, 0, 145, 145);
+    
+    UIImage *image = [UIImage imageNamed:@"grid.png"];
+    [self.gridImageView setImage:image];
+    [self.gridView addSubview:self.gridImageView];
+    [self.gridView addGestureRecognizer: self.tapGest];
+    [self.gridView setBackgroundColor:[UIColor blackColor]];
+    
+    [self.view setTag:subsquareNumber];
+    
+    CGRect viewFrame = CGRectMake( (BORDER_WIDTH + widthOfSubsquare) * (subsquareNumber % 2) + BORDER_WIDTH,
+                                  (BORDER_WIDTH + widthOfSubsquare) * (subsquareNumber / 2) + BORDER_WIDTH + TOP_MARGIN,
+                                  widthOfSubsquare, widthOfSubsquare);
+    self.view.frame = viewFrame;
+    
+}
+
 
 -(UITapGestureRecognizer *) tapGest
 {
@@ -130,13 +174,16 @@ const int TOP_MARGIN = 50;
 -(void) didSwipeRight: (UISwipeGestureRecognizer *) recongizer
 {
     NSLog(@"Did swipe right in the the %ld view", (long)[self.view tag] );
+    
+    [self.view bringSubviewToFront:self.gridView];
+    
     CGAffineTransform currTransform = self.gridView.layer.affineTransform;
-    [UIView animateWithDuration:1 animations:^ {
+    [UIView animateWithDuration:.15 animations:^ {
         CGAffineTransform newTransform = CGAffineTransformConcat(currTransform, CGAffineTransformMakeRotation(M_PI/2));
         self.gridView.layer.affineTransform = newTransform;
     }];
     
-    [self.view bringSubviewToFront:self.gridView];
+
     [self.view addGestureRecognizer:self.rightSwipe];
     
 }
@@ -144,102 +191,22 @@ const int TOP_MARGIN = 50;
 -(void) didSwipeLeft: (UISwipeGestureRecognizer *) recongizer
 {
     NSLog(@"Did swipe left in the the %ld view", (long)[self.view tag] );
+    
+    [self.view bringSubviewToFront:self.gridView];
+    
     CGAffineTransform currTransform = self.gridView.layer.affineTransform;
-    [UIView animateWithDuration:1 animations:^ {
+    [UIView animateWithDuration:.15 animations:^ {
         CGAffineTransform newTransform = CGAffineTransformConcat(currTransform, CGAffineTransformMakeRotation(M_PI/-2));
         self.gridView.layer.affineTransform = newTransform;
     }];
     
-    [self.view bringSubviewToFront:self.gridView];
+
     [self.view addGestureRecognizer:self.leftSwipe];
     
 }
 
-/*
--(void) animationDidStop:(CAAnimation *)anim finished:(BOOL)flag
-{
-    
-    CGPoint p = topLeftImageView.center; // hard-coded for demo only.
-    p.y += widthOfSubsquare / 3 * 2;
-    topLeftImageView.center = p;
-    
-    CABasicAnimation *rotate = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
-    [rotate setFromValue:[NSNumber numberWithDouble:M_PI / 2.0]];
-    [rotate setToValue: [NSNumber numberWithDouble: 0]];
-    [rotate setDuration:1];
-    [rotate setTimingFunction:[CAMediaTimingFunction functionWithName: kCAMediaTimingFunctionEaseInEaseOut]];
-    [[topLeftImageView layer] addAnimation:rotate forKey:@"marble unroates"];
-}
-
-*/
 
 
-
-- (IBAction)buttonTapped:(id)sender {
-    CGAffineTransform currTransform = self.blueLayer.affineTransform;
-    CGAffineTransform newTransform = CGAffineTransformConcat(currTransform, CGAffineTransformMakeRotation(M_PI/2));
-    self.blueLayer.affineTransform = newTransform;
-    
-}
-
-
-
--(void)setUpGrid
-{
-    
-    CGRect ivFrame = CGRectMake(0, 0, widthOfSubsquare, widthOfSubsquare);
-    self.gridImageView.frame = ivFrame;
-    UIImage *image = [UIImage imageNamed:@"grid.png"];
-    [self.gridImageView setImage:image];
-    [self.view addSubview:self.gridImageView];
-    
-    [self.view setBackgroundColor:[UIColor blackColor]];
-    
-    CGRect viewFrame = CGRectMake( (BORDER_WIDTH + widthOfSubsquare) * (subsquareNumber % 2) + BORDER_WIDTH,
-                                  (BORDER_WIDTH + widthOfSubsquare) * (subsquareNumber / 2) + BORDER_WIDTH + TOP_MARGIN,
-                                  widthOfSubsquare, widthOfSubsquare);
-    self.view.frame = viewFrame;
-    [self.view addGestureRecognizer: self.tapGest];
-    [self.view addGestureRecognizer: self.leftSwipe];
-    [self.view addGestureRecognizer: self.rightSwipe];
-}
-
--(void)setUpGridView
-{
-    //widthOfSubsquare  = 145;
-    
-    _gridFrame = CGRectMake(0, 0, widthOfSubsquare, widthOfSubsquare);
-    self.gridView = [[UIView alloc] initWithFrame: _gridFrame];
-    [self.gridView addGestureRecognizer:self.rightSwipe];
-    [self.gridView addGestureRecognizer:self.leftSwipe];
-    [self.view addSubview: self.gridView];
-    
-    self.gridImageView.frame = CGRectMake(0, 0, 145, 145);
-    
-    UIImage *image = [UIImage imageNamed:@"grid.png"];
-    [self.gridImageView setImage:image];
-    [self.gridView addSubview:self.gridImageView];
-    [self.gridView addGestureRecognizer: self.tapGest];
-    [self.gridView setBackgroundColor:[UIColor blackColor]];
-    
-    
-    
-    CGRect viewFrame = CGRectMake( (BORDER_WIDTH + widthOfSubsquare) * (subsquareNumber % 2) + BORDER_WIDTH,
-                                  (BORDER_WIDTH + widthOfSubsquare) * (subsquareNumber / 2) + BORDER_WIDTH + TOP_MARGIN,
-                                  widthOfSubsquare, widthOfSubsquare);
-    self.view.frame = viewFrame;
-    
-}
-
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    
-    [self setUpGridView];
-    
-
-}
 
 
 - (void)didReceiveMemoryWarning
