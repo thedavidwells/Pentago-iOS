@@ -54,7 +54,7 @@ UILabel *label;
         [self.subViewControllers addObject: p];
         [self.view addSubview: p.view];
     }
-    
+    [self.pBrain sendSubViews:self.subViewControllers];
 
     [self setGameTitleLabel];
     [self currentGameStateLabel];

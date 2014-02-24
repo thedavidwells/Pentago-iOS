@@ -15,10 +15,26 @@ typedef NS_ENUM(int, player){
     player2
 };
 
+-(void)buildMasterArray;
+-(void)updateSubArray: (NSMutableArray *)subArray from:(int)subSquare;
+-(void)setSubArrays: (NSMutableArray *)subArray from:(int)subSquare;
+
 @property (nonatomic) NSMutableArray *gameBoard;
 @property (nonatomic) int currentPlayer;
 
+@property (nonatomic) NSMutableArray *masterArray;
 
+-(void)sendSubViews: (NSMutableArray *)subViewArray;
+@property (nonatomic) NSMutableArray *subViews;
+@property(nonatomic) UIView *view1;
+@property(nonatomic) UIView *view2;
+@property(nonatomic) UIView *view3;
+@property(nonatomic) UIView *view4;
+
+@property(nonatomic) NSMutableArray *subArray0;
+@property(nonatomic) NSMutableArray *subArray1;
+@property(nonatomic) NSMutableArray *subArray2;
+@property(nonatomic) NSMutableArray *subArray3;
 
 -(void)switchPlayers;
 -(void)createGridArray: (UIView *)view;
