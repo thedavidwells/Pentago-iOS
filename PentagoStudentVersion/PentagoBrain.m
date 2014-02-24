@@ -148,7 +148,7 @@
     if (self.masterArray == Nil) {
         self.masterArray = [[NSMutableArray alloc] init];
     }
-    NSLog(@"*******Items in the master array: %d ******", [self.masterArray count]);
+    NSLog(@"*******Items in the master array: %lu ******", (unsigned long)[self.masterArray count]);
     
     for (int i = 0; i < [self.masterArray count]; i++) {
         NSLog(@"Items in master array: %@", [self.masterArray objectAtIndex:i ]);
@@ -159,8 +159,166 @@
 
 -(void)checkForWinner
 {
+
+/*
+    4 Cases for a win condition:
+    1. 5 in a row
+    2. 5 in a column
+    3. 5 diagonal to the right
+    4. 5 diagonal to the left
+*/
+    
+    NSNumber *curentPlayer = [NSNumber numberWithInt:self.currentPlayer];
     
     
+    // Go through every row:
+    
+    for (int i = 0; i < 7; i+=3) {
+        if ( ([self.masterArray objectAtIndex:i] == curentPlayer &&
+            [self.masterArray objectAtIndex:i+1] == curentPlayer &&
+            [self.masterArray objectAtIndex:i+2] == curentPlayer &&
+            [self.masterArray objectAtIndex:i+9] == curentPlayer &&
+            [self.masterArray objectAtIndex:i+10] == curentPlayer)
+            ||
+            ([self.masterArray objectAtIndex:i+1] == curentPlayer &&
+             [self.masterArray objectAtIndex:i+2] == curentPlayer &&
+             [self.masterArray objectAtIndex:i+9] == curentPlayer &&
+             [self.masterArray objectAtIndex:i+10] == curentPlayer &&
+             [self.masterArray objectAtIndex:i+11] == curentPlayer)
+            
+            
+            ) {
+            
+            NSLog(@"We have a winner!");
+        }
+    }
+    
+    for (int i = 18; i < 35; i+=3) {
+        if ( ([self.masterArray objectAtIndex:i] == curentPlayer &&
+            [self.masterArray objectAtIndex:i+1] == curentPlayer &&
+            [self.masterArray objectAtIndex:i+2] == curentPlayer &&
+            [self.masterArray objectAtIndex:i+9] == curentPlayer &&
+            [self.masterArray objectAtIndex:i+10] == curentPlayer)
+            ||
+            ([self.masterArray objectAtIndex:i+1] == curentPlayer &&
+             [self.masterArray objectAtIndex:i+2] == curentPlayer &&
+             [self.masterArray objectAtIndex:i+9] == curentPlayer &&
+             [self.masterArray objectAtIndex:i+10] == curentPlayer &&
+             [self.masterArray objectAtIndex:i+11] == curentPlayer)
+            ) {
+            
+            NSLog(@"We have a winner!");
+        }
+    }
+    
+    
+    // Go through every column:
+    
+    for (int i = 0; i < 3; i++) {
+        if ( ([self.masterArray objectAtIndex:i] == curentPlayer &&
+            [self.masterArray objectAtIndex:i+3] == curentPlayer &&
+            [self.masterArray objectAtIndex:i+6] == curentPlayer &&
+            [self.masterArray objectAtIndex:i+18] == curentPlayer &&
+            [self.masterArray objectAtIndex:i+21] == curentPlayer)
+            ||
+             ([self.masterArray objectAtIndex:i+3] == curentPlayer &&
+              [self.masterArray objectAtIndex:i+6] == curentPlayer &&
+              [self.masterArray objectAtIndex:i+18] == curentPlayer &&
+              [self.masterArray objectAtIndex:i+21] == curentPlayer &&
+              [self.masterArray objectAtIndex:i+24] == curentPlayer)
+            
+            ) {
+            
+            NSLog(@"We have a winner!");
+        }
+    }
+    
+    for (int i = 9; i < 12; i++) {
+        if ( ([self.masterArray objectAtIndex:i] == curentPlayer &&
+              [self.masterArray objectAtIndex:i+3] == curentPlayer &&
+              [self.masterArray objectAtIndex:i+6] == curentPlayer &&
+              [self.masterArray objectAtIndex:i+18] == curentPlayer &&
+              [self.masterArray objectAtIndex:i+21] == curentPlayer)
+            ||
+            ([self.masterArray objectAtIndex:i+3] == curentPlayer &&
+             [self.masterArray objectAtIndex:i+6] == curentPlayer &&
+             [self.masterArray objectAtIndex:i+18] == curentPlayer &&
+             [self.masterArray objectAtIndex:i+21] == curentPlayer &&
+             [self.masterArray objectAtIndex:i+24] == curentPlayer)
+            
+            ) {
+            
+            NSLog(@"We have a winner!");
+        }
+    }
+    
+    
+    
+    // Diagonal to the right:
+    
+    if ( ([self.masterArray objectAtIndex:10] == curentPlayer &&
+          [self.masterArray objectAtIndex:12] == curentPlayer &&
+          [self.masterArray objectAtIndex:8] == curentPlayer &&
+          [self.masterArray objectAtIndex:19] == curentPlayer &&
+          [self.masterArray objectAtIndex:21] == curentPlayer)
+        ||
+        ([self.masterArray objectAtIndex:11] == curentPlayer &&
+         [self.masterArray objectAtIndex:13] == curentPlayer &&
+         [self.masterArray objectAtIndex:15] == curentPlayer &&
+         [self.masterArray objectAtIndex:20] == curentPlayer &&
+         [self.masterArray objectAtIndex:22] == curentPlayer)
+        ||
+        ([self.masterArray objectAtIndex:13] == curentPlayer &&
+         [self.masterArray objectAtIndex:15] == curentPlayer &&
+         [self.masterArray objectAtIndex:20] == curentPlayer &&
+         [self.masterArray objectAtIndex:22] == curentPlayer &&
+         [self.masterArray objectAtIndex:24] == curentPlayer)
+        ||
+        ([self.masterArray objectAtIndex:14] == curentPlayer &&
+         [self.masterArray objectAtIndex:16] == curentPlayer &&
+         [self.masterArray objectAtIndex:27] == curentPlayer &&
+         [self.masterArray objectAtIndex:23] == curentPlayer &&
+         [self.masterArray objectAtIndex:25] == curentPlayer)
+        
+        ){
+        
+        NSLog(@"We have a winner!");
+        
+    }
+    
+    
+    
+    // Diagonal to the left:
+    
+    if ( ([self.masterArray objectAtIndex:0] == curentPlayer &&
+          [self.masterArray objectAtIndex:4] == curentPlayer &&
+          [self.masterArray objectAtIndex:8] == curentPlayer &&
+          [self.masterArray objectAtIndex:27] == curentPlayer &&
+          [self.masterArray objectAtIndex:31] == curentPlayer)
+        ||
+        ([self.masterArray objectAtIndex:4] == curentPlayer &&
+         [self.masterArray objectAtIndex:8] == curentPlayer &&
+         [self.masterArray objectAtIndex:27] == curentPlayer &&
+         [self.masterArray objectAtIndex:31] == curentPlayer &&
+         [self.masterArray objectAtIndex:35] == curentPlayer)
+        ||
+        ([self.masterArray objectAtIndex:1] == curentPlayer &&
+         [self.masterArray objectAtIndex:5] == curentPlayer &&
+         [self.masterArray objectAtIndex:15] == curentPlayer &&
+         [self.masterArray objectAtIndex:28] == curentPlayer &&
+         [self.masterArray objectAtIndex:32] == curentPlayer)
+        ||
+        ([self.masterArray objectAtIndex:3] == curentPlayer &&
+         [self.masterArray objectAtIndex:7] == curentPlayer &&
+         [self.masterArray objectAtIndex:20] == curentPlayer &&
+         [self.masterArray objectAtIndex:30] == curentPlayer &&
+         [self.masterArray objectAtIndex:34] == curentPlayer)
+        
+        ){
+        
+        NSLog(@"We have a winner!");
+
+    }
     
     
     

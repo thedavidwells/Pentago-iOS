@@ -360,6 +360,7 @@ const int TOP_MARGIN = 50;
     
     [self.pBrain updateSubArray:self.positionArray from:subsquareNumber];
     [self.pBrain buildMasterArray];
+    [self.pBrain checkForWinner];
 }
 
 

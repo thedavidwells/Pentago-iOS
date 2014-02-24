@@ -36,6 +36,8 @@ typedef NS_ENUM(int, player){
 @property(nonatomic) NSMutableArray *subArray2;
 @property(nonatomic) NSMutableArray *subArray3;
 
+
+-(void)checkForWinner;
 -(void)switchPlayers;
 -(void)createGridArray: (UIView *)view;
 +(PentagoBrain *) sharedInstance;
