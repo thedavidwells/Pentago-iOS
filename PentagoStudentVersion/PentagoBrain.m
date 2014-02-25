@@ -74,17 +74,7 @@
 }
 
 
--(void)sendSubViews: (NSMutableArray *)subViewArray
-{
-    self.subViews = subViewArray;
-    self.view1 = self.subViews[0];
-    self.view2 = self.subViews[1];
-    self.view3 = self.subViews[2];
-    self.view4 = self.subViews[3];
-    
-    NSLog(@"GOT %d Subviews in model", [self.subViews count]);
-    
-}
+
 
 -(void)updateSubArray: (NSMutableArray *)subArray from:(int)subSquare
 {
@@ -157,6 +147,95 @@
 
 
 
+-(NSMutableArray *)rotateLeft: (NSMutableArray *)subArray
+{
+    
+    NSMutableArray *rotated = [[NSMutableArray alloc] initWithCapacity:9];
+    
+    [rotated addObject:[subArray objectAtIndex:2]];
+    [rotated addObject:[subArray objectAtIndex:5]];
+    [rotated addObject:[subArray objectAtIndex:8]];
+    [rotated addObject:[subArray objectAtIndex:1]];
+    [rotated addObject:[subArray objectAtIndex:4]];
+    [rotated addObject:[subArray objectAtIndex:7]];
+    [rotated addObject:[subArray objectAtIndex:0]];
+    [rotated addObject:[subArray objectAtIndex:3]];
+    [rotated addObject:[subArray objectAtIndex:6]];
+     
+    
+    return rotated;
+}
+
+
+
+
+-(NSMutableArray *)rotateRight: (NSMutableArray *)subArray
+{
+    NSMutableArray *rotated = [[NSMutableArray alloc] initWithCapacity:9];
+    
+    [rotated addObject:[subArray objectAtIndex:6]];
+    [rotated addObject:[subArray objectAtIndex:3]];
+    [rotated addObject:[subArray objectAtIndex:0]];
+    [rotated addObject:[subArray objectAtIndex:7]];
+    [rotated addObject:[subArray objectAtIndex:4]];
+    [rotated addObject:[subArray objectAtIndex:1]];
+    [rotated addObject:[subArray objectAtIndex:8]];
+    [rotated addObject:[subArray objectAtIndex:5]];
+    [rotated addObject:[subArray objectAtIndex:2]];
+    
+    
+    
+    return rotated;
+}
+
+
+
+-(NSMutableArray *)flipRotation: (NSMutableArray *)subArray
+{
+    NSMutableArray *rotated = [[NSMutableArray alloc] initWithCapacity:9];
+    
+    [rotated addObject:[subArray objectAtIndex:8]];
+    [rotated addObject:[subArray objectAtIndex:7]];
+    [rotated addObject:[subArray objectAtIndex:6]];
+    [rotated addObject:[subArray objectAtIndex:5]];
+    [rotated addObject:[subArray objectAtIndex:4]];
+    [rotated addObject:[subArray objectAtIndex:3]];
+    [rotated addObject:[subArray objectAtIndex:2]];
+    [rotated addObject:[subArray objectAtIndex:1]];
+    [rotated addObject:[subArray objectAtIndex:0]];
+    
+    return rotated;
+}
+
+
+
+-(void)rotateArrayBackToNormal
+{
+    
+    
+}
+
+
+-(void)resetGame
+{
+    
+    
+}
+
+
+-(void)alertTheWinner
+{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"WINNER!"
+                                                    message:@"You have won!"
+                                                   delegate:nil
+                                          cancelButtonTitle:@"OK"
+                                          otherButtonTitles:nil];
+    [alert show];
+    
+    
+}
+
+
 -(void)checkForWinner
 {
 
@@ -190,6 +269,7 @@
             ) {
             
             NSLog(@"We have a winner!");
+            [self alertTheWinner];
         }
     }
     
@@ -208,6 +288,7 @@
             ) {
             
             NSLog(@"We have a winner!");
+            [self alertTheWinner];
         }
     }
     
@@ -230,6 +311,7 @@
             ) {
             
             NSLog(@"We have a winner!");
+            [self alertTheWinner];
         }
     }
     
@@ -249,6 +331,7 @@
             ) {
             
             NSLog(@"We have a winner!");
+            [self alertTheWinner];
         }
     }
     
@@ -283,6 +366,7 @@
         ){
         
         NSLog(@"We have a winner!");
+        [self alertTheWinner];
         
     }
     
@@ -317,6 +401,7 @@
         ){
         
         NSLog(@"We have a winner!");
+        [self alertTheWinner];
 
     }
     

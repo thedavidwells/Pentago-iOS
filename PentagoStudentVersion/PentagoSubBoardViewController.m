@@ -40,12 +40,17 @@ const int TOP_MARGIN = 50;
 
 -(void) didTapTheView: (UITapGestureRecognizer *) tapObject;
 
+
+
 @end
 
 
 
 
 @implementation PentagoSubBoardViewController
+
+int rotation = 0;
+
 
 
 
@@ -378,7 +383,9 @@ const int TOP_MARGIN = 50;
 
 
     [self.view addGestureRecognizer:self.rightSwipe];
-    
+
+    [self.positionArray setArray:[self.pBrain rotateRight:self.positionArray]];
+    [self.pBrain updateSubArray:self.positionArray from:subsquareNumber];
 }
 
 -(void) didSwipeLeft: (UISwipeGestureRecognizer *) recongizer
@@ -396,6 +403,9 @@ const int TOP_MARGIN = 50;
 
     [self.view addGestureRecognizer:self.leftSwipe];
     
+
+    [self.positionArray setArray:[self.pBrain rotateRight:self.positionArray]];
+    [self.pBrain updateSubArray:self.positionArray from:subsquareNumber];
 }
 
 
