@@ -43,7 +43,7 @@ const int TOP_MARGIN = 50;
 
 -(void) didTapTheView: (UITapGestureRecognizer *) tapObject;
 
-
+@property(nonatomic) int rotations;
 
 @end
 
@@ -52,7 +52,6 @@ const int TOP_MARGIN = 50;
 
 @implementation PentagoSubBoardViewController
 
-int rotation = 0;
 
 
 
@@ -67,7 +66,7 @@ int rotation = 0;
     
     [self.pBrain createGridArray:self.view];
     [self.pBrain setSubArrays:self.positionArray from:subsquareNumber];
-
+    
 }
 
 
@@ -85,6 +84,7 @@ int rotation = 0;
 
 -(void)setUpGridView
 {
+    self.rotations = 0;
     
     _gridFrame = CGRectMake(0, 0, widthOfSubsquare, widthOfSubsquare);
     self.gridView = [[UIView alloc] initWithFrame: _gridFrame];
@@ -188,7 +188,6 @@ int rotation = 0;
     CGRect appFrame = [[UIScreen mainScreen] applicationFrame];
     widthOfSubsquare = ( appFrame.size.width - 3 * BORDER_WIDTH ) / 2;
     
-
     return self;
 }
 
@@ -197,13 +196,20 @@ int rotation = 0;
 {
 
     // p is the location of the tap in the coordinate system of this view-controller's view (not the view of the
-    // the view-controller that includes the subboards.)
+    // the view-controller that includes the su0bboards.)
     
     CGPoint p = [tapObject locationInView:self.view];
-    NSLog(@"TAP LOCATION: %f , %f", p.x, p.y);
     
+    CGPoint original = p;
     
     int squareWidth = widthOfSubsquare / 3;
+    
+    NSLog(@"TAP LOCATION: %d , %d", (int) (p.x / squareWidth), (int) (p.y / squareWidth));
+    
+    p = [self compensateForRotation:p withSquareWidth:squareWidth];
+    
+    
+
     // The board is divided into nine equally sized squares and thus width = height.
     UIImageView *iView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"donut_chocolate.png"]];
     iView.frame = CGRectMake((int) (p.x / squareWidth) * squareWidth,
@@ -222,10 +228,9 @@ int rotation = 0;
         NSLog(@"Player 2's turn");
     }
 
-    
+    [self determineArrayPosition:original];
     self.collision = false;
-    [self determineArrayPosition:p];
-    if (self.collision == false) {
+        if (self.collision == false) {
         
         self.ballLayer = [CALayer layer];
         [self.ballLayer addSublayer: iView.layer];
@@ -246,23 +251,221 @@ int rotation = 0;
 
 
 
--(void)compensateForRotation: (CGPoint) point
+-(CGPoint)compensateForRotation: (CGPoint) point withSquareWidth: (int) squareWidth
 {
-    //right rotated
-    if (rotation > 0) {
+    // row or column
+    int zero = 25;
+    int one = 75;
+    int two = 140;
+    
+    //  Adjust for rotation
+    if (self.rotations == 1 || self.rotations == -3) {
+        NSLog(@"adjusting for rotation...... rotation = %d", self.rotations);
+        CGPoint temp = point;
+
+        // col 1
+        if (temp.x < 49) {
+            NSLog(@"%f, %f", temp.x, temp.y);
+            
+            if (temp.y < 49) {
+                point.x = point.x;
+                point.y = 145 - temp.y;
+            }
+            else if(temp.y < 96){
+                point.x = 75;
+                point.y = 140;
+                NSLog(@"%f, %f", point.x, point.y);
+            }
+            else if(temp.y < 145){
+                point.x = 140;
+                point.y = 140;
+                NSLog(@"%f, %f", point.x, point.y);
+            }
+            return  point;
+        }
         
-        NSLog(@"Rotated Right, Rotating the view Left " );
+        // col 2
+        else if (temp.x < 96) {
+            NSLog(@"%f, %f", temp.x, temp.y);
+            
+            if (temp.y < 49) {
+                point.x = zero;
+                point.y = one;
+            }
+            else if(temp.y < 96){
+                point.x = one;
+                point.y = one;
+                NSLog(@"%f, %f", point.x, point.y);
+            }
+            else if(temp.y < 145){
+                point.x = two;
+                point.y = one;
+                NSLog(@"%f, %f", point.x, point.y);
+            }
+            return point;
+        }
         
-        
-        CGAffineTransform currTransform = self.view.layer.affineTransform;
-        [UIView animateWithDuration:.15 animations:^ {
-            CGAffineTransform newTransform = CGAffineTransformConcat(currTransform, CGAffineTransformMakeRotation(M_PI/2));
-            self.view.layer.affineTransform = newTransform;
-        }];
-       
-        
+        // col 3
+        else if (temp.x < 145) {
+            NSLog(@"%f, %f", temp.x, temp.y);
+            
+            if (temp.y < 49) {
+                point.x = zero;
+                point.y = zero;
+            }
+            else if(temp.y < 96){
+                point.x = one;
+                point.y = zero;
+                NSLog(@"%f, %f", point.x, point.y);
+            }
+            else if(temp.y < 145){
+                point.x = two;
+                point.y = zero;
+                NSLog(@"%f, %f", point.x, point.y);
+            }
+            return point;
+        }
     }
     
+        //  Adjust for rotation
+        else if (self.rotations == 2 || self.rotations == -2) {
+            NSLog(@"adjusting for rotation...... rotation = %d", self.rotations);
+            CGPoint temp = point;
+            
+            // col 1
+            if (temp.x < 49) {
+                NSLog(@"%f, %f", temp.x, temp.y);
+                
+                if (temp.y < 49) {
+                    point.x = two;
+                    point.y = two;
+                }
+                else if(temp.y < 96){
+                    point.x = two;
+                    point.y = one;
+                    NSLog(@"%f, %f", point.x, point.y);
+                }
+                else if(temp.y < 145){
+                    point.x = two;
+                    point.y = zero;
+                    NSLog(@"%f, %f", point.x, point.y);
+                }
+                return  point;
+            }
+            
+            // col 2
+            else if (temp.x < 96) {
+                NSLog(@"%f, %f", temp.x, temp.y);
+                
+                if (temp.y < 49) {
+                    point.x = one;
+                    point.y = two;
+                }
+                else if(temp.y < 96){
+                    point.x = one;
+                    point.y = one;
+                    NSLog(@"%f, %f", point.x, point.y);
+                }
+                else if(temp.y < 145){
+                    point.x = one;
+                    point.y = zero;
+                    NSLog(@"%f, %f", point.x, point.y);
+                }
+                return point;
+            }
+            
+            // col 3
+            else if (temp.x < 145) {
+                NSLog(@"%f, %f", temp.x, temp.y);
+                
+                if (temp.y < 49) {
+                    point.x = zero;
+                    point.y = two;
+                }
+                else if(temp.y < 96){
+                    point.x = zero;
+                    point.y = one;
+                    NSLog(@"%f, %f", point.x, point.y);
+                }
+                else if(temp.y < 145){
+                    point.x = zero;
+                    point.y = zero;
+                    NSLog(@"%f, %f", point.x, point.y);
+                }
+                return point;
+            }
+        }
+
+        
+            //  Adjust for rotation
+            else if (self.rotations == 3 || self.rotations == -1) {
+                NSLog(@"adjusting for rotation...... rotation = %d", self.rotations);
+                CGPoint temp = point;
+                
+                // col 1
+                if (temp.x < 49) {
+                    NSLog(@"%f, %f", temp.x, temp.y);
+                    
+                    if (temp.y < 49) {
+                        point.x = two;
+                        point.y = zero;
+                    }
+                    else if(temp.y < 96){
+                        point.x = one;
+                        point.y = zero;
+                        NSLog(@"%f, %f", point.x, point.y);
+                    }
+                    else if(temp.y < 145){
+                        point.x = zero;
+                        point.y = zero;
+                        NSLog(@"%f, %f", point.x, point.y);
+                    }
+                    return  point;
+                }
+                
+                // col 2
+                else if (temp.x < 96) {
+                    NSLog(@"%f, %f", temp.x, temp.y);
+                    
+                    if (temp.y < 49) {
+                        point.x = two;
+                        point.y = one;
+                    }
+                    else if(temp.y < 96){
+                        point.x = one;
+                        point.y = one;
+                        NSLog(@"%f, %f", point.x, point.y);
+                    }
+                    else if(temp.y < 145){
+                        point.x = zero;
+                        point.y = one;
+                        NSLog(@"%f, %f", point.x, point.y);
+                    }
+                    return point;
+                }
+                
+                // col 3
+                else if (temp.x < 145) {
+                    NSLog(@"%f, %f", temp.x, temp.y);
+                    
+                    if (temp.y < 49) {
+                        point.x = two;
+                        point.y = two;
+                    }
+                    else if(temp.y < 96){
+                        point.x = one;
+                        point.y = two;
+                        NSLog(@"%f, %f", point.x, point.y);
+                    }
+                    else if(temp.y < 145){
+                        point.x = zero;
+                        point.y = two;
+                        NSLog(@"%f, %f", point.x, point.y);
+                    }
+                    return point;
+                }
+            }
+    return point;
 }
 
 -(void)determineArrayPosition: (CGPoint)point
@@ -270,7 +473,7 @@ int rotation = 0;
     NSNumber *currentPlayer = [NSNumber numberWithInt:self.pBrain.currentPlayer];
     
     [self updateTempArray];
-    
+    /*
     //  Adjust for rotation
     if (rotation == 1 || rotation == -3) {
         NSLog(@"adjusting for rotation...... rotation = %d", rotation);
@@ -287,7 +490,7 @@ int rotation = 0;
         point.y = 145 - point.y;
         NSLog(@"adjusting for rotation...... rotation = %d", rotation);
     }
-    
+    */
     
     // Column 1
     if (point.x < 49) {
@@ -444,15 +647,21 @@ int rotation = 0;
     [self.view bringSubviewToFront:self.gridView];
     [self.view addGestureRecognizer:self.rightSwipe];
     
-    [self.pBrain updateSubArray:self.positionArray from:subsquareNumber];
+    
     [self.positionArray setArray:[self.pBrain rotateRight:self.positionArray inSubView:subsquareNumber]];
-
+    [self.pBrain updateSubArray:self.positionArray from:subsquareNumber];
+    
+    NSLog(@"*******Items in the SUB array: %lu ******", (unsigned long)[self.positionArray count]);
+    
+    for (int i = 0; i < [self.positionArray count]; i++) {
+        NSLog(@"SUB ARRAY at %d: %@", i, [self.positionArray objectAtIndex:i ]);
+    }
     
     self.currentRotation = rotatedRight;
-    rotation++;
-    NSLog(@"ROTATIONS:  %d", rotation);
-    if (rotation == 4 || rotation == -4) {
-        rotation = 0;
+    self.rotations++;
+    NSLog(@"ROTATIONS:  %d", self.rotations);
+    if (self.rotations == 4 || self.rotations == -4) {
+        self.rotations = 0;
     }
     //[self updateTempArray];
 }
@@ -477,10 +686,10 @@ int rotation = 0;
     [self.pBrain updateSubArray:self.positionArray from:subsquareNumber];
     
     self.currentRotation = rotatedLeft;
-    rotation--;
-    NSLog(@"ROTATIONS:  %d", rotation);
-    if (rotation == 4 || rotation == -4) {
-        rotation = 0;
+    self.rotations--;
+    NSLog(@"ROTATIONS:  %d", self.rotations);
+    if (self.rotations == 4 || self.rotations == -4) {
+        self.rotations = 0;
     }
     //[self updateTempArray];
 }
@@ -504,15 +713,15 @@ int rotation = 0;
 {
     NSNumber *currentPlayer = [NSNumber numberWithInt:self.pBrain.currentPlayer];
     
-    if (rotation == 1 || rotation == -3) {
+    if (self.rotations == 1 || self.rotations == -3) {
         point.x = 145 - point.x;
         
     }
-    else if (rotation == 2 || rotation == -2){
+    else if (self.rotations == 2 || self.rotations == -2){
         point.x = 145 - point.x;
         point.y = 145 - point.y;
     }
-    else if (rotation == 3 || rotation == -1){
+    else if (self.rotations == 3 || self.rotations == -1){
         point.y = 145 - point.y;
     }
 

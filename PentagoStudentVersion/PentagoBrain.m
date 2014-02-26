@@ -86,7 +86,7 @@
         [self buildMasterArray];
         
         for (int i = 0; i < [self.subArray0 count]; i++) {
-            //NSLog(@"Sub array in MODEL: %@", [self.subArray0 objectAtIndex:i ]);
+            NSLog(@"Sub array in MODEL: %@", [self.subArray0 objectAtIndex:i ]);
         }
         
     }
@@ -151,10 +151,10 @@
     if (self.masterArray == Nil) {
         self.masterArray = [[NSMutableArray alloc] init];
     }
-    //NSLog(@"*******Items in the master array: %lu ******", (unsigned long)[self.masterArray count]);
+    NSLog(@"*******Items in the master array: %lu ******", (unsigned long)[self.masterArray count]);
     
     for (int i = 0; i < [self.masterArray count]; i++) {
-        //NSLog(@"Items in master array: %@", [self.masterArray objectAtIndex:i ]);
+        NSLog(@"MASTER ARRAY at %d: %@", i, [self.masterArray objectAtIndex:i ]);
     }
      
 }
