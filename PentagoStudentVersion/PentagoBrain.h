@@ -15,6 +15,13 @@ typedef NS_ENUM(int, player){
     player2
 };
 
+typedef NS_ENUM(int, rotations){
+    original,
+    rotatedLeft,
+    rotatedRight,
+    flipped
+};
+
 -(void)buildMasterArray;
 -(void)updateSubArray: (NSMutableArray *)subArray from:(int)subSquare;
 -(void)setSubArrays: (NSMutableArray *)subArray from:(int)subSquare;
@@ -24,7 +31,7 @@ typedef NS_ENUM(int, player){
 
 @property (nonatomic) NSMutableArray *masterArray;
 
-
+-(NSMutableArray *)updateThisArray: (int)subSquare;
 
 @property(nonatomic) NSMutableArray *subArray0;
 @property(nonatomic) NSMutableArray *subArray1;
@@ -37,8 +44,10 @@ typedef NS_ENUM(int, player){
 -(void)createGridArray: (UIView *)view;
 +(PentagoBrain *) sharedInstance;
 
--(NSMutableArray *)rotateLeft: (NSMutableArray *)subArray;
--(NSMutableArray *)rotateRight: (NSMutableArray *)subArray;
+-(NSMutableArray *)rotateLeft: (NSMutableArray *)subArray inSubView:(int)subView;
+-(NSMutableArray *)rotateRight: (NSMutableArray *)subArray inSubView:(int)subView;
+
+
 -(NSMutableArray *)flipRotation: (NSMutableArray *)subArray;
 
 

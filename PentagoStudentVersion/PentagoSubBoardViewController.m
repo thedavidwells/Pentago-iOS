@@ -21,9 +21,12 @@ const int TOP_MARGIN = 50;
 }
 
 @property(nonatomic) player player;
+@property(nonatomic) rotations currentRotation;
+
+
 @property(nonatomic) bool collision;
 
-@property(nonatomic) CALayer *blueLayer;
+@property(nonatomic) UIView *tapLocations;
 
 @property (nonatomic, strong) PentagoBrain *pBrain;
 @property(nonatomic) PentagoViewController *pView;
@@ -59,6 +62,7 @@ int rotation = 0;
     [super viewDidLoad];
     
     [self setUpGridView];
+    //[self setUpTapView];
     [self initPositionArray];
     
     [self.pBrain createGridArray:self.view];
@@ -67,6 +71,16 @@ int rotation = 0;
 }
 
 
+-(void)setUpTapView
+{
+    
+    self.tapLocations = [[UIView alloc] initWithFrame: CGRectMake(0, 0, 145, 145)];
+    [self.tapLocations setBackgroundColor: [UIColor clearColor]];
+    self.tapLocations.frame = CGRectMake(0, 0, 145, 145);
+    //self.tapLocations.affineTransform = CGAffineTransformMakeRotation(0.0);
+    [self.view addSubview:self.tapLocations];
+    
+}
 
 
 -(void)setUpGridView
@@ -107,8 +121,9 @@ int rotation = 0;
     
     for (int i = 0; i < 9; i++) {
         [self.positionArray  addObject:self.blank];
-        NSLog(@"Object initialized to array: %@", self.blank);
+        //NSLog(@"Object initialized to array: %@", self.blank);
     }
+    
 }
 
 
@@ -184,11 +199,20 @@ int rotation = 0;
     // p is the location of the tap in the coordinate system of this view-controller's view (not the view of the
     // the view-controller that includes the subboards.)
     
-    CGPoint p = [tapObject locationInView:self.gridView];
+    CGPoint p = [tapObject locationInView:self.view];
+    NSLog(@"TAP LOCATION: %f , %f", p.x, p.y);
+    
+    
     int squareWidth = widthOfSubsquare / 3;
     // The board is divided into nine equally sized squares and thus width = height.
     UIImageView *iView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"donut_chocolate.png"]];
+    iView.frame = CGRectMake((int) (p.x / squareWidth) * squareWidth,
+                             (int) (p.y / squareWidth) * squareWidth,
+                             squareWidth,
+                             squareWidth);
     
+    
+    // Switch players
     if (self.pBrain.currentPlayer == player1) {
         iView.image = [UIImage imageNamed:@"donut_strawberry.png"];
         NSLog(@"Player 1's turn");
@@ -198,23 +222,15 @@ int rotation = 0;
         NSLog(@"Player 2's turn");
     }
 
-    iView.frame = CGRectMake((int) (p.x / squareWidth) * squareWidth,
-                             (int) (p.y / squareWidth) * squareWidth,
-                             squareWidth,
-                             squareWidth);
-    
-    NSLog(@"p.x value: %f, p.y value: %f", p.x, p.y);
     
     self.collision = false;
-    
     [self determineArrayPosition:p];
-
     if (self.collision == false) {
-   
+        
         self.ballLayer = [CALayer layer];
         [self.ballLayer addSublayer: iView.layer];
         self.ballLayer.frame = CGRectMake(0, 0, widthOfSubsquare, widthOfSubsquare);
-        self.ballLayer.affineTransform = CGAffineTransformMakeRotation(0.0);
+        //self.ballLayer.affineTransform = CGAffineTransformMakeRotation(0.0);
         [self.gridView.layer addSublayer:self.ballLayer];
         
         [self.pBrain switchPlayers];
@@ -223,13 +239,55 @@ int rotation = 0;
     else{
         return;
     }
+    self.collision = false;
+    //[self updateTempArray];
+
 }
 
 
 
+-(void)compensateForRotation: (CGPoint) point
+{
+    //right rotated
+    if (rotation > 0) {
+        
+        NSLog(@"Rotated Right, Rotating the view Left " );
+        
+        
+        CGAffineTransform currTransform = self.view.layer.affineTransform;
+        [UIView animateWithDuration:.15 animations:^ {
+            CGAffineTransform newTransform = CGAffineTransformConcat(currTransform, CGAffineTransformMakeRotation(M_PI/2));
+            self.view.layer.affineTransform = newTransform;
+        }];
+       
+        
+    }
+    
+}
+
 -(void)determineArrayPosition: (CGPoint)point
 {
     NSNumber *currentPlayer = [NSNumber numberWithInt:self.pBrain.currentPlayer];
+    
+    [self updateTempArray];
+    
+    //  Adjust for rotation
+    if (rotation == 1 || rotation == -3) {
+        NSLog(@"adjusting for rotation...... rotation = %d", rotation);
+        NSLog(@"adjusted point: %f, %f", point.x, point.y);
+        point.x = 145 - point.x;
+        NSLog(@"adjusted point: %f, %f", point.x, point.y);
+    }
+    else if (rotation == 2 || rotation == -2){
+        point.x = 145 - point.x;
+        point.y = 145 - point.y;
+        NSLog(@"adjusting for rotation...... rotation = %d", rotation);
+    }
+    else if (rotation == 3 || rotation == -1){
+        point.y = 145 - point.y;
+        NSLog(@"adjusting for rotation...... rotation = %d", rotation);
+    }
+    
     
     // Column 1
     if (point.x < 49) {
@@ -364,8 +422,10 @@ int rotation = 0;
     }
     
     [self.pBrain updateSubArray:self.positionArray from:subsquareNumber];
+    // NSLog(@"UPDATE SHOULD HAVE OCCURED");
     [self.pBrain buildMasterArray];
     [self.pBrain checkForWinner];
+    //[self updateTempArray];
 }
 
 
@@ -373,7 +433,7 @@ int rotation = 0;
 {
     NSLog(@"Did swipe right in the the %ld view", (long)[self.view tag] );
     
-    [self.view bringSubviewToFront:self.gridView];
+    
     
     CGAffineTransform currTransform = self.gridView.layer.affineTransform;
     [UIView animateWithDuration:.15 animations:^ {
@@ -381,18 +441,27 @@ int rotation = 0;
         self.gridView.layer.affineTransform = newTransform;
     }];
 
-
+    [self.view bringSubviewToFront:self.gridView];
     [self.view addGestureRecognizer:self.rightSwipe];
-
-    [self.positionArray setArray:[self.pBrain rotateRight:self.positionArray]];
+    
     [self.pBrain updateSubArray:self.positionArray from:subsquareNumber];
+    [self.positionArray setArray:[self.pBrain rotateRight:self.positionArray inSubView:subsquareNumber]];
+
+    
+    self.currentRotation = rotatedRight;
+    rotation++;
+    NSLog(@"ROTATIONS:  %d", rotation);
+    if (rotation == 4 || rotation == -4) {
+        rotation = 0;
+    }
+    //[self updateTempArray];
 }
 
 -(void) didSwipeLeft: (UISwipeGestureRecognizer *) recongizer
 {
     NSLog(@"Did swipe left in the the %ld view", (long)[self.view tag] );
     
-    [self.view bringSubviewToFront:self.gridView];
+    
     
     CGAffineTransform currTransform = self.gridView.layer.affineTransform;
     [UIView animateWithDuration:.15 animations:^ {
@@ -400,17 +469,189 @@ int rotation = 0;
         self.gridView.layer.affineTransform = newTransform;
     }];
     
-
+    [self.view bringSubviewToFront:self.gridView];
     [self.view addGestureRecognizer:self.leftSwipe];
     
-
-    [self.positionArray setArray:[self.pBrain rotateRight:self.positionArray]];
+    
+    [self.positionArray setArray:[self.pBrain rotateLeft:self.positionArray inSubView:subsquareNumber]];
     [self.pBrain updateSubArray:self.positionArray from:subsquareNumber];
+    
+    self.currentRotation = rotatedLeft;
+    rotation--;
+    NSLog(@"ROTATIONS:  %d", rotation);
+    if (rotation == 4 || rotation == -4) {
+        rotation = 0;
+    }
+    //[self updateTempArray];
 }
 
 
+-(void)updateTempArray
+{
+    
+    NSIndexSet *mySet = [[NSIndexSet alloc]initWithIndexesInRange:NSMakeRange(0,9)];
+    
+    [self.positionArray replaceObjectsAtIndexes:mySet withObjects:[self.pBrain updateThisArray:subsquareNumber] ];
+    
+    
+    for (int i = 0; i < [self.positionArray count]; i++) {
+        //NSLog(@"Sub array: %@", [self.positionArray objectAtIndex:i ]);
+    }
+}
 
 
+-(void)adjustForPartialRotation: (CGPoint)point
+{
+    NSNumber *currentPlayer = [NSNumber numberWithInt:self.pBrain.currentPlayer];
+    
+    if (rotation == 1 || rotation == -3) {
+        point.x = 145 - point.x;
+        
+    }
+    else if (rotation == 2 || rotation == -2){
+        point.x = 145 - point.x;
+        point.y = 145 - point.y;
+    }
+    else if (rotation == 3 || rotation == -1){
+        point.y = 145 - point.y;
+    }
+
+    
+    
+    // Column 1
+    if (point.x < 49) {
+        if ( point.y < 49) {
+            NSLog(@"array index 0");
+            
+            if ([self.positionArray objectAtIndex:0] ==  self.blank) {
+                NSLog(@"Blank, replacing");
+                [self.positionArray replaceObjectAtIndex:0 withObject:currentPlayer];
+            }
+            else{
+                NSLog(@"NOT BLANK");
+                NSLog(@"Object: %@", [self.positionArray objectAtIndex:0]);
+                self.collision = true;
+            }
+            
+        }
+        else if ( point.y < 96) {
+            NSLog(@"array index 3");
+            
+            if ([self.positionArray objectAtIndex:3] ==  self.blank) {
+                NSLog(@"Blank, replacing");
+                [self.positionArray replaceObjectAtIndex:3 withObject:currentPlayer];
+            }
+            else{
+                NSLog(@"NOT BLANK");
+                NSLog(@"Object: %@", [self.positionArray objectAtIndex:3]);
+                self.collision = true;
+            }
+            
+            
+            
+        }
+        else if ( point.y < 145) {
+            
+            
+            NSLog(@"array index 6");
+            
+            if ([self.positionArray objectAtIndex:6] ==  self.blank) {
+                NSLog(@"Blank, replacing");
+                [self.positionArray replaceObjectAtIndex:6 withObject:currentPlayer];
+            }
+            else{
+                NSLog(@"NOT BLANK");
+                NSLog(@"Object: %@", [self.positionArray objectAtIndex:0]);
+                self.collision = true;
+            }
+            
+        }
+        
+        
+    }
+    
+    // Column 2
+    else if (point.x < 96){
+        if ( point.y < 49) {
+            NSLog(@"array index 1");
+            if ([self.positionArray objectAtIndex:1] ==  self.blank) {
+                NSLog(@"Blank, replacing");
+                [self.positionArray replaceObjectAtIndex:1 withObject:currentPlayer];
+            }
+            else{
+                NSLog(@"NOT BLANK");
+                NSLog(@"Object: %@", [self.positionArray objectAtIndex:1]);
+                self.collision = true;
+            }
+        }
+        else if ( point.y < 96) {
+            NSLog(@"array index 4");
+            if ([self.positionArray objectAtIndex:4] ==  self.blank) {
+                NSLog(@"Blank, replacing");
+                [self.positionArray replaceObjectAtIndex:4 withObject:currentPlayer];
+            }
+            else{
+                NSLog(@"NOT BLANK");
+                NSLog(@"Object: %@", [self.positionArray objectAtIndex:4]);
+                self.collision = true;
+            }
+        }
+        else if ( point.y < 145) {
+            NSLog(@"array index 7");
+            if ([self.positionArray objectAtIndex:7] ==  self.blank) {
+                NSLog(@"Blank, replacing");
+                [self.positionArray replaceObjectAtIndex:7 withObject:currentPlayer];
+            }
+            else{
+                NSLog(@"NOT BLANK");
+                NSLog(@"Object: %@", [self.positionArray objectAtIndex:7]);
+                self.collision = true;
+            }
+        }
+    }
+    
+    // Column 3
+    else if (point.x < 145){
+        if ( point.y < 49) {
+            NSLog(@"array index 2");
+            if ([self.positionArray objectAtIndex:2] ==  self.blank) {
+                NSLog(@"Blank, replacing");
+                [self.positionArray replaceObjectAtIndex:2 withObject:currentPlayer];
+            }
+            else{
+                NSLog(@"NOT BLANK");
+                NSLog(@"Object: %@", [self.positionArray objectAtIndex:2]);
+                self.collision = true;
+            }
+        }
+        else if ( point.y < 96) {
+            NSLog(@"array index 5");
+            if ([self.positionArray objectAtIndex:5] ==  self.blank) {
+                NSLog(@"Blank, replacing");
+                [self.positionArray replaceObjectAtIndex:5 withObject:currentPlayer];
+            }
+            else{
+                NSLog(@"NOT BLANK");
+                NSLog(@"Object: %@", [self.positionArray objectAtIndex:5]);
+                self.collision = true;
+            }
+        }
+        else if ( point.y < 145) {
+            NSLog(@"array index 8");
+            if ([self.positionArray objectAtIndex:8] ==  self.blank) {
+                NSLog(@"Blank, replacing");
+                [self.positionArray replaceObjectAtIndex:8 withObject:currentPlayer];
+            }
+            else{
+                NSLog(@"NOT BLANK");
+                NSLog(@"Object: %@", [self.positionArray objectAtIndex:8]);
+                self.collision = true;
+            }
+        }
+    }
+
+    
+}
 
 - (void)didReceiveMemoryWarning
 {

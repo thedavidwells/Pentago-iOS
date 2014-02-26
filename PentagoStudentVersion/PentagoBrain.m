@@ -83,24 +83,33 @@
         [self.subArray0 setArray:subArray];
         NSIndexSet *mySet = [[NSIndexSet alloc]initWithIndexesInRange:NSMakeRange(0,9)];
         [self.masterArray replaceObjectsAtIndexes:mySet withObjects:self.subArray0];
+        [self buildMasterArray];
+        
+        for (int i = 0; i < [self.subArray0 count]; i++) {
+            //NSLog(@"Sub array in MODEL: %@", [self.subArray0 objectAtIndex:i ]);
+        }
+        
     }
     else if ( subSquare == 1 ){
         NSLog(@"Updating array %d ", subSquare);
         [self.subArray1 setArray:subArray];
         NSIndexSet *mySet = [[NSIndexSet alloc]initWithIndexesInRange:NSMakeRange(9,9)];
         [self.masterArray replaceObjectsAtIndexes:mySet withObjects:self.subArray1];
+        [self buildMasterArray];
     }
     else if (subSquare == 2 ){
         NSLog(@"Updating array %d ", subSquare);
         [self.subArray2 setArray:subArray];
         NSIndexSet *mySet = [[NSIndexSet alloc]initWithIndexesInRange:NSMakeRange(18,9)];
         [self.masterArray replaceObjectsAtIndexes:mySet withObjects:self.subArray2];
+        [self buildMasterArray];
     }
     else if (subSquare == 3 ){
         NSLog(@"Updating array %d ", subSquare);
         [self.subArray3 setArray:subArray];
         NSIndexSet *mySet = [[NSIndexSet alloc]initWithIndexesInRange:NSMakeRange(27,9)];
         [self.masterArray replaceObjectsAtIndexes:mySet withObjects:self.subArray3];
+        [self buildMasterArray];
     }
 }
 
@@ -110,24 +119,28 @@
     [self buildMasterArray];
     
     if ( subSquare == 0 ) {
-        NSLog(@"Updating array %d ", subSquare);
+        NSLog(@"Setting array %d ", subSquare);
         [self.subArray0 setArray:subArray];
         [self.masterArray addObjectsFromArray:self.subArray0];
+        [self buildMasterArray];
     }
     else if ( subSquare == 1 ){
-        NSLog(@"Updating array %d ", subSquare);
+        NSLog(@"Setting array %d ", subSquare);
         [self.subArray1 setArray:subArray];
         [self.masterArray addObjectsFromArray:self.subArray1];
+        [self buildMasterArray];
     }
     else if (subSquare == 2 ){
-        NSLog(@"Updating array %d ", subSquare);
+        NSLog(@"Setting array %d ", subSquare);
         [self.subArray2 setArray:subArray];
         [self.masterArray addObjectsFromArray:self.subArray2];
+        [self buildMasterArray];
     }
     else if (subSquare == 3 ){
-        NSLog(@"Updating array %d ", subSquare);
+        NSLog(@"Setting array %d ", subSquare);
         [self.subArray3 setArray:subArray];
         [self.masterArray addObjectsFromArray:self.subArray3];
+        [self buildMasterArray];
     }
 }
 
@@ -138,19 +151,67 @@
     if (self.masterArray == Nil) {
         self.masterArray = [[NSMutableArray alloc] init];
     }
-    NSLog(@"*******Items in the master array: %lu ******", (unsigned long)[self.masterArray count]);
+    //NSLog(@"*******Items in the master array: %lu ******", (unsigned long)[self.masterArray count]);
     
     for (int i = 0; i < [self.masterArray count]; i++) {
-        NSLog(@"Items in master array: %@", [self.masterArray objectAtIndex:i ]);
+        //NSLog(@"Items in master array: %@", [self.masterArray objectAtIndex:i ]);
     }
+     
 }
 
 
 
--(NSMutableArray *)rotateLeft: (NSMutableArray *)subArray
+-(NSMutableArray *)rotateLeft: (NSMutableArray *)subArray inSubView:(int)subView
 {
     
     NSMutableArray *rotated = [[NSMutableArray alloc] initWithCapacity:9];
+    
+    if (subView == 0) {
+        [rotated addObject:[self.subArray0 objectAtIndex:2]];
+        [rotated addObject:[self.subArray0 objectAtIndex:5]];
+        [rotated addObject:[self.subArray0 objectAtIndex:8]];
+        [rotated addObject:[self.subArray0 objectAtIndex:1]];
+        [rotated addObject:[self.subArray0 objectAtIndex:4]];
+        [rotated addObject:[self.subArray0 objectAtIndex:7]];
+        [rotated addObject:[self.subArray0 objectAtIndex:0]];
+        [rotated addObject:[self.subArray0 objectAtIndex:3]];
+        [rotated addObject:[self.subArray0 objectAtIndex:6]];
+    }
+    else if (subView == 1) {
+        [rotated addObject:[self.subArray1 objectAtIndex:2]];
+        [rotated addObject:[self.subArray1 objectAtIndex:5]];
+        [rotated addObject:[self.subArray1 objectAtIndex:8]];
+        [rotated addObject:[self.subArray1 objectAtIndex:1]];
+        [rotated addObject:[self.subArray1 objectAtIndex:4]];
+        [rotated addObject:[self.subArray1 objectAtIndex:7]];
+        [rotated addObject:[self.subArray1 objectAtIndex:0]];
+        [rotated addObject:[self.subArray1 objectAtIndex:3]];
+        [rotated addObject:[self.subArray1 objectAtIndex:6]];
+    }
+    else if (subView == 2) {
+        [rotated addObject:[self.subArray2 objectAtIndex:2]];
+        [rotated addObject:[self.subArray2 objectAtIndex:5]];
+        [rotated addObject:[self.subArray2 objectAtIndex:8]];
+        [rotated addObject:[self.subArray2 objectAtIndex:1]];
+        [rotated addObject:[self.subArray2 objectAtIndex:4]];
+        [rotated addObject:[self.subArray2 objectAtIndex:7]];
+        [rotated addObject:[self.subArray2 objectAtIndex:0]];
+        [rotated addObject:[self.subArray2 objectAtIndex:3]];
+        [rotated addObject:[self.subArray2 objectAtIndex:6]];
+    }
+    else if (subView == 3) {
+        [rotated addObject:[self.subArray3 objectAtIndex:2]];
+        [rotated addObject:[self.subArray3 objectAtIndex:5]];
+        [rotated addObject:[self.subArray3 objectAtIndex:8]];
+        [rotated addObject:[self.subArray3 objectAtIndex:1]];
+        [rotated addObject:[self.subArray3 objectAtIndex:4]];
+        [rotated addObject:[self.subArray3 objectAtIndex:7]];
+        [rotated addObject:[self.subArray3 objectAtIndex:0]];
+        [rotated addObject:[self.subArray3 objectAtIndex:3]];
+        [rotated addObject:[self.subArray3 objectAtIndex:6]];
+    }
+    
+    /*
     
     [rotated addObject:[subArray objectAtIndex:2]];
     [rotated addObject:[subArray objectAtIndex:5]];
@@ -162,17 +223,75 @@
     [rotated addObject:[subArray objectAtIndex:3]];
     [rotated addObject:[subArray objectAtIndex:6]];
      
-    
+    if (subView == 0) {
+        [self.subArray0 setArray:rotated];
+    }
+    else if (subView == 1) {
+        [self.subArray1 setArray:rotated];
+    }
+    else if (subView == 2) {
+        [self.subArray2 setArray:rotated];
+    }
+    else if (subView == 3) {
+        [self.subArray3 setArray:rotated];
+    }
+    */
     return rotated;
 }
 
 
 
 
--(NSMutableArray *)rotateRight: (NSMutableArray *)subArray
+-(NSMutableArray *)rotateRight: (NSMutableArray *)subArray inSubView:(int)subView
 {
     NSMutableArray *rotated = [[NSMutableArray alloc] initWithCapacity:9];
     
+    
+    if (subView == 0) {
+        [rotated addObject:[self.subArray0 objectAtIndex:6]];
+        [rotated addObject:[self.subArray0 objectAtIndex:3]];
+        [rotated addObject:[self.subArray0 objectAtIndex:0]];
+        [rotated addObject:[self.subArray0 objectAtIndex:7]];
+        [rotated addObject:[self.subArray0 objectAtIndex:4]];
+        [rotated addObject:[self.subArray0 objectAtIndex:1]];
+        [rotated addObject:[self.subArray0 objectAtIndex:8]];
+        [rotated addObject:[self.subArray0 objectAtIndex:5]];
+        [rotated addObject:[self.subArray0 objectAtIndex:2]];
+    }
+    else if (subView == 1) {
+        [rotated addObject:[self.subArray1 objectAtIndex:6]];
+        [rotated addObject:[self.subArray1 objectAtIndex:3]];
+        [rotated addObject:[self.subArray1 objectAtIndex:0]];
+        [rotated addObject:[self.subArray1 objectAtIndex:7]];
+        [rotated addObject:[self.subArray1 objectAtIndex:4]];
+        [rotated addObject:[self.subArray1 objectAtIndex:1]];
+        [rotated addObject:[self.subArray1 objectAtIndex:8]];
+        [rotated addObject:[self.subArray1 objectAtIndex:5]];
+        [rotated addObject:[self.subArray1 objectAtIndex:2]];
+    }
+    else if (subView == 2) {
+        [rotated addObject:[self.subArray2 objectAtIndex:6]];
+        [rotated addObject:[self.subArray2 objectAtIndex:3]];
+        [rotated addObject:[self.subArray2 objectAtIndex:0]];
+        [rotated addObject:[self.subArray2 objectAtIndex:7]];
+        [rotated addObject:[self.subArray2 objectAtIndex:4]];
+        [rotated addObject:[self.subArray2 objectAtIndex:1]];
+        [rotated addObject:[self.subArray2 objectAtIndex:8]];
+        [rotated addObject:[self.subArray2 objectAtIndex:5]];
+        [rotated addObject:[self.subArray2 objectAtIndex:2]];
+    }
+    else if (subView == 3) {
+        [rotated addObject:[self.subArray3 objectAtIndex:6]];
+        [rotated addObject:[self.subArray3 objectAtIndex:3]];
+        [rotated addObject:[self.subArray3 objectAtIndex:0]];
+        [rotated addObject:[self.subArray3 objectAtIndex:7]];
+        [rotated addObject:[self.subArray3 objectAtIndex:4]];
+        [rotated addObject:[self.subArray3 objectAtIndex:1]];
+        [rotated addObject:[self.subArray3 objectAtIndex:8]];
+        [rotated addObject:[self.subArray3 objectAtIndex:5]];
+        [rotated addObject:[self.subArray3 objectAtIndex:2]];
+    }
+    /*
     [rotated addObject:[subArray objectAtIndex:6]];
     [rotated addObject:[subArray objectAtIndex:3]];
     [rotated addObject:[subArray objectAtIndex:0]];
@@ -183,8 +302,20 @@
     [rotated addObject:[subArray objectAtIndex:5]];
     [rotated addObject:[subArray objectAtIndex:2]];
     
-    
-    
+    if (subView == 0) {
+        [self.subArray0 setArray:rotated];
+    }
+    else if (subView == 1) {
+        [self.subArray1 setArray:rotated];
+    }
+    else if (subView == 2) {
+        [self.subArray2 setArray:rotated];
+    }
+    else if (subView == 3) {
+        [self.subArray3 setArray:rotated];
+    }
+    */
+    NSLog(@"ROTATING RIGHT COMPLETE.");
     return rotated;
 }
 
@@ -209,11 +340,26 @@
 
 
 
--(void)rotateArrayBackToNormal
+
+-(NSMutableArray *)updateThisArray: (int)subSquare
 {
-    
-    
+    if ( subSquare == 0 ) {
+        return self.subArray0;
+    }
+    else if ( subSquare == 1 ){
+        return self.subArray1;
+    }
+    else if (subSquare == 2 ){
+        return self.subArray2;
+    }
+    else if (subSquare == 3 ){
+        return self.subArray3;
+    }
+    return nil;
 }
+
+
+
 
 
 -(void)resetGame
