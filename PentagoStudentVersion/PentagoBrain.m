@@ -15,9 +15,6 @@
 
 
 
-
-
-
 +(PentagoBrain *) sharedInstance
 {
     static PentagoBrain *sharedObject = nil;
@@ -27,10 +24,32 @@
     return sharedObject;
 }
 
+-(id)init{
+    
+    self = [super init];
+    
+    NSLog(@"Running Custom Init");
+    
+    NSNumber *capacity = @46;
+    
+    self.masterArray = [[NSMutableArray alloc] initWithCapacity:capacity.intValue];
+    
+    NSNumber *blank = @-1;
+
+    
+    for (int i = 0; i < capacity.intValue; i++) {
+        [self.masterArray setObject:blank atIndexedSubscript:i];
+    }
+    
+    NSLog(@"MASTER ARRAY SIZE: %d", [self.masterArray count]);
+
+    return self;
+}
+
 
 -(void)createGridArray: (UIView *)view {
     
-    if (self.gameBoard == Nil) {
+    if (self.gameBoard == nil) {
         self.gameBoard = [[NSMutableArray alloc] init];
     }
     [self.gameBoard addObject:view];
@@ -106,10 +125,17 @@
     }
     else if (subSquare == 3 ){
         NSLog(@"Updating array %d ", subSquare);
+        
+        NSLog(@" SUB ARRAY COUNT: %d", [subArray count]);
         [self.subArray3 setArray:subArray];
         NSIndexSet *mySet = [[NSIndexSet alloc]initWithIndexesInRange:NSMakeRange(27,9)];
+        
         [self.masterArray replaceObjectsAtIndexes:mySet withObjects:self.subArray3];
         [self buildMasterArray];
+        
+        for (int i = 0; i < [self.subArray3 count]; i++) {
+            NSLog(@"Sub array 4 in MODEL: %@", [self.subArray3 objectAtIndex:i ]);
+        }
     }
 }
 
@@ -148,9 +174,6 @@
 
 -(void)buildMasterArray
 {
-    if (self.masterArray == Nil) {
-        self.masterArray = [[NSMutableArray alloc] init];
-    }
     NSLog(@"*******Items in the master array: %lu ******", (unsigned long)[self.masterArray count]);
     
     for (int i = 0; i < [self.masterArray count]; i++) {

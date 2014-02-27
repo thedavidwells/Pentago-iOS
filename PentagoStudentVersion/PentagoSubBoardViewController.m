@@ -228,8 +228,9 @@ const int TOP_MARGIN = 50;
         NSLog(@"Player 2's turn");
     }
 
-    [self determineArrayPosition:original];
+    
     self.collision = false;
+    [self determineArrayPosition:original];
         if (self.collision == false) {
         
         self.ballLayer = [CALayer layer];
@@ -245,7 +246,7 @@ const int TOP_MARGIN = 50;
         return;
     }
     self.collision = false;
-    //[self updateTempArray];
+    [self updateTempArray];
 
 }
 
@@ -473,24 +474,7 @@ const int TOP_MARGIN = 50;
     NSNumber *currentPlayer = [NSNumber numberWithInt:self.pBrain.currentPlayer];
     
     [self updateTempArray];
-    /*
-    //  Adjust for rotation
-    if (rotation == 1 || rotation == -3) {
-        NSLog(@"adjusting for rotation...... rotation = %d", rotation);
-        NSLog(@"adjusted point: %f, %f", point.x, point.y);
-        point.x = 145 - point.x;
-        NSLog(@"adjusted point: %f, %f", point.x, point.y);
-    }
-    else if (rotation == 2 || rotation == -2){
-        point.x = 145 - point.x;
-        point.y = 145 - point.y;
-        NSLog(@"adjusting for rotation...... rotation = %d", rotation);
-    }
-    else if (rotation == 3 || rotation == -1){
-        point.y = 145 - point.y;
-        NSLog(@"adjusting for rotation...... rotation = %d", rotation);
-    }
-    */
+
     
     // Column 1
     if (point.x < 49) {
