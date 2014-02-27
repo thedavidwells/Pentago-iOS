@@ -11,6 +11,6 @@
 @interface PentagoSubBoardViewController : UIViewController
 
 @property (nonatomic) NSMutableArray *positionArray;
-
 -(id) initWithSubsquare: (int) position;
+
 @end

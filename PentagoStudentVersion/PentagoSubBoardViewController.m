@@ -20,30 +20,23 @@ const int TOP_MARGIN = 50;
     CGRect _gridFrame;
 }
 
-@property(nonatomic) player player;
-@property(nonatomic) rotations currentRotation;
-
-
-@property(nonatomic) bool collision;
-
-@property(nonatomic) UIView *tapLocations;
-
+@property (nonatomic) player player;
+@property (nonatomic) rotations currentRotation;
+@property (nonatomic) bool collision;
+@property (nonatomic) UIView *tapLocations;
 @property (nonatomic, strong) PentagoBrain *pBrain;
-@property(nonatomic) PentagoViewController *pView;
+@property (nonatomic) PentagoViewController *pView;
 @property (nonatomic, strong) UIImageView *gridImageView;
 @property (nonatomic) UIView *gridView;
 @property (nonatomic) CALayer *ballLayer;
-
 @property (nonatomic, strong) UITapGestureRecognizer *tapGest;
-
 @property (nonatomic) NSNumber *blank;
-
 @property (nonatomic) UISwipeGestureRecognizer *rightSwipe;
 @property (nonatomic) UISwipeGestureRecognizer *leftSwipe;
+@property (nonatomic) int rotations;
+@property (nonatomic) BOOL playerDidRotate;
 
 -(void) didTapTheView: (UITapGestureRecognizer *) tapObject;
-
-@property(nonatomic) int rotations;
 
 @end
 
@@ -54,34 +47,22 @@ const int TOP_MARGIN = 50;
 
 
 
-
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
     [self setUpGridView];
-    //[self setUpTapView];
     [self initPositionArray];
-    
     [self.pBrain createGridArray:self.view];
     [self.pBrain setSubArrays:self.positionArray from:subsquareNumber];
     
 }
 
 
--(void)setUpTapView
-{
-    
-    self.tapLocations = [[UIView alloc] initWithFrame: CGRectMake(0, 0, 145, 145)];
-    [self.tapLocations setBackgroundColor: [UIColor clearColor]];
-    self.tapLocations.frame = CGRectMake(0, 0, 145, 145);
-    //self.tapLocations.affineTransform = CGAffineTransformMakeRotation(0.0);
-    [self.view addSubview:self.tapLocations];
-    
-}
 
-
+//  Set up Grid View
+//  Just made a method for this code to keep view Did Load simpler
+//  This is code by Dr. Kooshesh posted for the CS470 class.
 -(void)setUpGridView
 {
     self.rotations = 0;
@@ -110,23 +91,25 @@ const int TOP_MARGIN = 50;
 }
 
 
+
+//  Init Position Array
+//  Initialize a temporary array to keep track of positions in the subview
+//  before sending them to the brain (model).
 -(void)initPositionArray
 {
     if (self.positionArray == nil) {
         self.positionArray = [[NSMutableArray alloc] initWithCapacity:9];
     }
-    
     self.blank = [NSNumber numberWithInt:-1];
-
-    
     for (int i = 0; i < 9; i++) {
         [self.positionArray  addObject:self.blank];
-        //NSLog(@"Object initialized to array: %@", self.blank);
     }
-    
 }
 
 
+
+//  Tap Gest
+//  Initialize the tap gestrue recognizer
 -(UITapGestureRecognizer *) tapGest
 {
     if( ! _tapGest ) {
@@ -139,6 +122,10 @@ const int TOP_MARGIN = 50;
     return _tapGest;
 }
 
+
+
+//  Right Swipe
+//  Initialize the right swipe gestrue recognizer
 -(UISwipeGestureRecognizer *) rightSwipe
 {
 
@@ -149,6 +136,10 @@ const int TOP_MARGIN = 50;
     return _rightSwipe;
 }
 
+
+
+//  Left Swipe
+//  Initialize the left swipe gestrue recognizer
 -(UISwipeGestureRecognizer *) leftSwipe
 {
 
@@ -160,6 +151,9 @@ const int TOP_MARGIN = 50;
 }
 
 
+
+//  P Brain
+//  Initialize the shared instance of model, pBrain
 -(PentagoBrain *) pBrain
 {
     if( ! _pBrain )
@@ -167,6 +161,10 @@ const int TOP_MARGIN = 50;
     return _pBrain;
 }
 
+
+
+//  Grid Image View
+//  Initialize the UI Image View for the grid
 -(UIImageView *) gridImageView
 {
     if( ! _gridImageView ) {
@@ -175,6 +173,11 @@ const int TOP_MARGIN = 50;
     return _gridImageView;
 }
 
+
+
+//  Init with Subsquare
+//  Initializer method for creating subview, and setting subSquare number
+//  to be able to identify each subview.  Code provided by Kooshesh.
 -(id) initWithSubsquare: (int) position
 {
     // 0 1
@@ -192,42 +195,44 @@ const int TOP_MARGIN = 50;
 }
 
 
+
+//  Did Tap The View
+//  Code that responds when a tap gesture is recognized.
+//  Part of the code was provided by Kooshesh.
+//  Handles capturing of tap point, determining where to place the image on the
+//  board, where to place the value in the array, and also when a tap is detected
+//  it will alternate players turns and game piece.
+//  In an update I might consider refactoring this method, but for now it works.
 -(void) didTapTheView: (UITapGestureRecognizer *) tapObject
 {
 
     // p is the location of the tap in the coordinate system of this view-controller's view (not the view of the
-    // the view-controller that includes the su0bboards.)
+    // the view-controller that includes the subboards.)
     
     CGPoint p = [tapObject locationInView:self.view];
-    
     CGPoint original = p;
     
     int squareWidth = widthOfSubsquare / 3;
-    
-    NSLog(@"TAP LOCATION: %d , %d", (int) (p.x / squareWidth), (int) (p.y / squareWidth));
-    
+    //  NSLog(@"TAP LOCATION: %d , %d", (int) (p.x / squareWidth), (int) (p.y / squareWidth));
     p = [self compensateForRotation:p withSquareWidth:squareWidth];
     
-    
-
     // The board is divided into nine equally sized squares and thus width = height.
     UIImageView *iView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"donut_chocolate.png"]];
     iView.frame = CGRectMake((int) (p.x / squareWidth) * squareWidth,
                              (int) (p.y / squareWidth) * squareWidth,
                              squareWidth,
                              squareWidth);
-    
-    
     // Switch players
     if (self.pBrain.currentPlayer == player1) {
         iView.image = [UIImage imageNamed:@"donut_strawberry.png"];
         NSLog(@"Player 1's turn");
+         self.playerDidRotate = [self.pBrain checkPlayerRotation:FALSE];
     }
     else if (self.pBrain.currentPlayer == player2){
         iView.image = [UIImage imageNamed:@"donut_chocolate.png"];
         NSLog(@"Player 2's turn");
+        self.playerDidRotate = [self.pBrain checkPlayerRotation:FALSE];
     }
-
     
     self.collision = false;
     [self determineArrayPosition:original];
@@ -240,6 +245,7 @@ const int TOP_MARGIN = 50;
         [self.gridView.layer addSublayer:self.ballLayer];
         
         [self.pBrain switchPlayers];
+        self.playerDidRotate = [self.pBrain checkPlayerRotation:FALSE];
         [PentagoViewController changeGameStateLabel];
     }
     else{
@@ -252,6 +258,13 @@ const int TOP_MARGIN = 50;
 
 
 
+
+//  Compensate for Rotation
+//  This handles the fact that the view's coordinates (where the tap point is captured)
+//  stays the same, while the gridView rotates and those coordinates change.
+//  There needed to be a mapping from the views normal coordinate system to the
+//  rotated coordinate system of the gridView so that the game piece could be placed at
+//  the correct location.
 -(CGPoint)compensateForRotation: (CGPoint) point withSquareWidth: (int) squareWidth
 {
     // row or column
@@ -261,13 +274,10 @@ const int TOP_MARGIN = 50;
     
     //  Adjust for rotation
     if (self.rotations == 1 || self.rotations == -3) {
-        NSLog(@"adjusting for rotation...... rotation = %d", self.rotations);
         CGPoint temp = point;
 
         // col 1
         if (temp.x < 49) {
-            NSLog(@"%f, %f", temp.x, temp.y);
-            
             if (temp.y < 49) {
                 point.x = point.x;
                 point.y = 145 - temp.y;
@@ -275,20 +285,16 @@ const int TOP_MARGIN = 50;
             else if(temp.y < 96){
                 point.x = 75;
                 point.y = 140;
-                NSLog(@"%f, %f", point.x, point.y);
             }
             else if(temp.y < 145){
                 point.x = 140;
                 point.y = 140;
-                NSLog(@"%f, %f", point.x, point.y);
             }
             return  point;
         }
         
         // col 2
         else if (temp.x < 96) {
-            NSLog(@"%f, %f", temp.x, temp.y);
-            
             if (temp.y < 49) {
                 point.x = zero;
                 point.y = one;
@@ -296,20 +302,16 @@ const int TOP_MARGIN = 50;
             else if(temp.y < 96){
                 point.x = one;
                 point.y = one;
-                NSLog(@"%f, %f", point.x, point.y);
             }
             else if(temp.y < 145){
                 point.x = two;
                 point.y = one;
-                NSLog(@"%f, %f", point.x, point.y);
             }
             return point;
         }
         
         // col 3
         else if (temp.x < 145) {
-            NSLog(@"%f, %f", temp.x, temp.y);
-            
             if (temp.y < 49) {
                 point.x = zero;
                 point.y = zero;
@@ -317,12 +319,10 @@ const int TOP_MARGIN = 50;
             else if(temp.y < 96){
                 point.x = one;
                 point.y = zero;
-                NSLog(@"%f, %f", point.x, point.y);
             }
             else if(temp.y < 145){
                 point.x = two;
                 point.y = zero;
-                NSLog(@"%f, %f", point.x, point.y);
             }
             return point;
         }
@@ -330,13 +330,10 @@ const int TOP_MARGIN = 50;
     
         //  Adjust for rotation
         else if (self.rotations == 2 || self.rotations == -2) {
-            NSLog(@"adjusting for rotation...... rotation = %d", self.rotations);
             CGPoint temp = point;
             
             // col 1
             if (temp.x < 49) {
-                NSLog(@"%f, %f", temp.x, temp.y);
-                
                 if (temp.y < 49) {
                     point.x = two;
                     point.y = two;
@@ -344,20 +341,16 @@ const int TOP_MARGIN = 50;
                 else if(temp.y < 96){
                     point.x = two;
                     point.y = one;
-                    NSLog(@"%f, %f", point.x, point.y);
                 }
                 else if(temp.y < 145){
                     point.x = two;
                     point.y = zero;
-                    NSLog(@"%f, %f", point.x, point.y);
                 }
                 return  point;
             }
             
             // col 2
             else if (temp.x < 96) {
-                NSLog(@"%f, %f", temp.x, temp.y);
-                
                 if (temp.y < 49) {
                     point.x = one;
                     point.y = two;
@@ -365,20 +358,16 @@ const int TOP_MARGIN = 50;
                 else if(temp.y < 96){
                     point.x = one;
                     point.y = one;
-                    NSLog(@"%f, %f", point.x, point.y);
                 }
                 else if(temp.y < 145){
                     point.x = one;
                     point.y = zero;
-                    NSLog(@"%f, %f", point.x, point.y);
                 }
                 return point;
             }
             
             // col 3
             else if (temp.x < 145) {
-                NSLog(@"%f, %f", temp.x, temp.y);
-                
                 if (temp.y < 49) {
                     point.x = zero;
                     point.y = two;
@@ -386,12 +375,10 @@ const int TOP_MARGIN = 50;
                 else if(temp.y < 96){
                     point.x = zero;
                     point.y = one;
-                    NSLog(@"%f, %f", point.x, point.y);
                 }
                 else if(temp.y < 145){
                     point.x = zero;
                     point.y = zero;
-                    NSLog(@"%f, %f", point.x, point.y);
                 }
                 return point;
             }
@@ -400,13 +387,10 @@ const int TOP_MARGIN = 50;
         
             //  Adjust for rotation
             else if (self.rotations == 3 || self.rotations == -1) {
-                NSLog(@"adjusting for rotation...... rotation = %d", self.rotations);
                 CGPoint temp = point;
                 
                 // col 1
                 if (temp.x < 49) {
-                    NSLog(@"%f, %f", temp.x, temp.y);
-                    
                     if (temp.y < 49) {
                         point.x = two;
                         point.y = zero;
@@ -414,20 +398,16 @@ const int TOP_MARGIN = 50;
                     else if(temp.y < 96){
                         point.x = one;
                         point.y = zero;
-                        NSLog(@"%f, %f", point.x, point.y);
                     }
                     else if(temp.y < 145){
                         point.x = zero;
                         point.y = zero;
-                        NSLog(@"%f, %f", point.x, point.y);
                     }
                     return  point;
                 }
                 
                 // col 2
                 else if (temp.x < 96) {
-                    NSLog(@"%f, %f", temp.x, temp.y);
-                    
                     if (temp.y < 49) {
                         point.x = two;
                         point.y = one;
@@ -435,20 +415,16 @@ const int TOP_MARGIN = 50;
                     else if(temp.y < 96){
                         point.x = one;
                         point.y = one;
-                        NSLog(@"%f, %f", point.x, point.y);
                     }
                     else if(temp.y < 145){
                         point.x = zero;
                         point.y = one;
-                        NSLog(@"%f, %f", point.x, point.y);
                     }
                     return point;
                 }
                 
                 // col 3
                 else if (temp.x < 145) {
-                    NSLog(@"%f, %f", temp.x, temp.y);
-                    
                     if (temp.y < 49) {
                         point.x = two;
                         point.y = two;
@@ -456,12 +432,10 @@ const int TOP_MARGIN = 50;
                     else if(temp.y < 96){
                         point.x = one;
                         point.y = two;
-                        NSLog(@"%f, %f", point.x, point.y);
                     }
                     else if(temp.y < 145){
                         point.x = zero;
                         point.y = two;
-                        NSLog(@"%f, %f", point.x, point.y);
                     }
                     return point;
                 }
@@ -469,100 +443,68 @@ const int TOP_MARGIN = 50;
     return point;
 }
 
+
+
+
+//  Determine Array Position
+//  This method uses the true coordinates of the view to determine where to
+//  put the players value in the array.
 -(void)determineArrayPosition: (CGPoint)point
 {
     NSNumber *currentPlayer = [NSNumber numberWithInt:self.pBrain.currentPlayer];
-    
     [self updateTempArray];
 
-    
     // Column 1
     if (point.x < 49) {
         if ( point.y < 49) {
-            NSLog(@"array index 0");
-            
             if ([self.positionArray objectAtIndex:0] ==  self.blank) {
-                NSLog(@"Blank, replacing");
                 [self.positionArray replaceObjectAtIndex:0 withObject:currentPlayer];
             }
             else{
-                NSLog(@"NOT BLANK");
-                NSLog(@"Object: %@", [self.positionArray objectAtIndex:0]);
                 self.collision = true;
             }
-            
         }
         else if ( point.y < 96) {
-            NSLog(@"array index 3");
-            
             if ([self.positionArray objectAtIndex:3] ==  self.blank) {
-                NSLog(@"Blank, replacing");
                 [self.positionArray replaceObjectAtIndex:3 withObject:currentPlayer];
             }
             else{
-                NSLog(@"NOT BLANK");
-                NSLog(@"Object: %@", [self.positionArray objectAtIndex:3]);
                 self.collision = true;
             }
-
-            
-            
         }
         else if ( point.y < 145) {
-            
-            
-            NSLog(@"array index 6");
-            
             if ([self.positionArray objectAtIndex:6] ==  self.blank) {
-                NSLog(@"Blank, replacing");
                 [self.positionArray replaceObjectAtIndex:6 withObject:currentPlayer];
             }
             else{
-                NSLog(@"NOT BLANK");
-                NSLog(@"Object: %@", [self.positionArray objectAtIndex:0]);
                 self.collision = true;
             }
-
         }
-        
-        
     }
     
     // Column 2
     else if (point.x < 96){
         if ( point.y < 49) {
-            NSLog(@"array index 1");
             if ([self.positionArray objectAtIndex:1] ==  self.blank) {
-                NSLog(@"Blank, replacing");
                 [self.positionArray replaceObjectAtIndex:1 withObject:currentPlayer];
             }
             else{
-                NSLog(@"NOT BLANK");
-                NSLog(@"Object: %@", [self.positionArray objectAtIndex:1]);
                 self.collision = true;
             }
         }
         else if ( point.y < 96) {
-            NSLog(@"array index 4");
             if ([self.positionArray objectAtIndex:4] ==  self.blank) {
-                NSLog(@"Blank, replacing");
                 [self.positionArray replaceObjectAtIndex:4 withObject:currentPlayer];
             }
             else{
-                NSLog(@"NOT BLANK");
-                NSLog(@"Object: %@", [self.positionArray objectAtIndex:4]);
                 self.collision = true;
             }
         }
         else if ( point.y < 145) {
-            NSLog(@"array index 7");
             if ([self.positionArray objectAtIndex:7] ==  self.blank) {
-                NSLog(@"Blank, replacing");
                 [self.positionArray replaceObjectAtIndex:7 withObject:currentPlayer];
             }
             else{
-                NSLog(@"NOT BLANK");
-                NSLog(@"Object: %@", [self.positionArray objectAtIndex:7]);
                 self.collision = true;
             }
         }
@@ -571,57 +513,49 @@ const int TOP_MARGIN = 50;
     // Column 3
     else if (point.x < 145){
         if ( point.y < 49) {
-            NSLog(@"array index 2");
             if ([self.positionArray objectAtIndex:2] ==  self.blank) {
-                NSLog(@"Blank, replacing");
                 [self.positionArray replaceObjectAtIndex:2 withObject:currentPlayer];
             }
             else{
-                NSLog(@"NOT BLANK");
-                NSLog(@"Object: %@", [self.positionArray objectAtIndex:2]);
                 self.collision = true;
             }
         }
         else if ( point.y < 96) {
-            NSLog(@"array index 5");
             if ([self.positionArray objectAtIndex:5] ==  self.blank) {
-                NSLog(@"Blank, replacing");
                 [self.positionArray replaceObjectAtIndex:5 withObject:currentPlayer];
             }
             else{
-                NSLog(@"NOT BLANK");
-                NSLog(@"Object: %@", [self.positionArray objectAtIndex:5]);
                 self.collision = true;
             }
         }
         else if ( point.y < 145) {
-            NSLog(@"array index 8");
             if ([self.positionArray objectAtIndex:8] ==  self.blank) {
-                NSLog(@"Blank, replacing");
                 [self.positionArray replaceObjectAtIndex:8 withObject:currentPlayer];
             }
             else{
-                NSLog(@"NOT BLANK");
-                NSLog(@"Object: %@", [self.positionArray objectAtIndex:8]);
                 self.collision = true;
             }
         }
     }
     
     [self.pBrain updateSubArray:self.positionArray from:subsquareNumber];
-    // NSLog(@"UPDATE SHOULD HAVE OCCURED");
-    [self.pBrain buildMasterArray];
     [self.pBrain checkForWinner];
     //[self updateTempArray];
 }
 
 
+
+
+//  Did Swipe Right
+//  Triggered when a right swipe gesture is recognized.
+//  Handles rotation of the gridView.  Also handles calling the method
+//  in the model that does the rotation logic.
 -(void) didSwipeRight: (UISwipeGestureRecognizer *) recongizer
 {
     NSLog(@"Did swipe right in the the %ld view", (long)[self.view tag] );
-    
-    
-    
+    if (self.playerDidRotate) {
+        return;
+    }
     CGAffineTransform currTransform = self.gridView.layer.affineTransform;
     [UIView animateWithDuration:.15 animations:^ {
         CGAffineTransform newTransform = CGAffineTransformConcat(currTransform, CGAffineTransformMakeRotation(M_PI/2));
@@ -631,31 +565,31 @@ const int TOP_MARGIN = 50;
     [self.view bringSubviewToFront:self.gridView];
     [self.view addGestureRecognizer:self.rightSwipe];
     
-    
     [self.positionArray setArray:[self.pBrain rotateRight:self.positionArray inSubView:subsquareNumber]];
     [self.pBrain updateSubArray:self.positionArray from:subsquareNumber];
     
-    NSLog(@"*******Items in the SUB array: %lu ******", (unsigned long)[self.positionArray count]);
-    
-    for (int i = 0; i < [self.positionArray count]; i++) {
-        NSLog(@"SUB ARRAY at %d: %@", i, [self.positionArray objectAtIndex:i ]);
-    }
-    
     self.currentRotation = rotatedRight;
     self.rotations++;
-    NSLog(@"ROTATIONS:  %d", self.rotations);
     if (self.rotations == 4 || self.rotations == -4) {
         self.rotations = 0;
     }
+    self.playerDidRotate = [self.pBrain checkPlayerRotation:TRUE];
     //[self updateTempArray];
 }
 
+
+
+
+//  Did Swipe Left
+//  Triggered when a left swipe gesture is recognized.
+//  Handles rotation of the gridView.  Also handles calling the method
+//  in the model that does the rotation logic.
 -(void) didSwipeLeft: (UISwipeGestureRecognizer *) recongizer
 {
     NSLog(@"Did swipe left in the the %ld view", (long)[self.view tag] );
-    
-    
-    
+    if (self.playerDidRotate) {
+        return;
+    }
     CGAffineTransform currTransform = self.gridView.layer.affineTransform;
     [UIView animateWithDuration:.15 animations:^ {
         CGAffineTransform newTransform = CGAffineTransformConcat(currTransform, CGAffineTransformMakeRotation(M_PI/-2));
@@ -671,180 +605,29 @@ const int TOP_MARGIN = 50;
     
     self.currentRotation = rotatedLeft;
     self.rotations--;
-    NSLog(@"ROTATIONS:  %d", self.rotations);
+
     if (self.rotations == 4 || self.rotations == -4) {
         self.rotations = 0;
     }
+    self.playerDidRotate = [self.pBrain checkPlayerRotation:TRUE];
     //[self updateTempArray];
 }
 
 
+
+
+//  Update Temp Array
+//  Updates the temp array here in the view controller with array from model
+//  Used just to keep things current and valid.
 -(void)updateTempArray
 {
-    
     NSIndexSet *mySet = [[NSIndexSet alloc]initWithIndexesInRange:NSMakeRange(0,9)];
     
     [self.positionArray replaceObjectsAtIndexes:mySet withObjects:[self.pBrain updateThisArray:subsquareNumber] ];
-    
-    
-    for (int i = 0; i < [self.positionArray count]; i++) {
-        //NSLog(@"Sub array: %@", [self.positionArray objectAtIndex:i ]);
-    }
 }
 
 
--(void)adjustForPartialRotation: (CGPoint)point
-{
-    NSNumber *currentPlayer = [NSNumber numberWithInt:self.pBrain.currentPlayer];
-    
-    if (self.rotations == 1 || self.rotations == -3) {
-        point.x = 145 - point.x;
-        
-    }
-    else if (self.rotations == 2 || self.rotations == -2){
-        point.x = 145 - point.x;
-        point.y = 145 - point.y;
-    }
-    else if (self.rotations == 3 || self.rotations == -1){
-        point.y = 145 - point.y;
-    }
 
-    
-    
-    // Column 1
-    if (point.x < 49) {
-        if ( point.y < 49) {
-            NSLog(@"array index 0");
-            
-            if ([self.positionArray objectAtIndex:0] ==  self.blank) {
-                NSLog(@"Blank, replacing");
-                [self.positionArray replaceObjectAtIndex:0 withObject:currentPlayer];
-            }
-            else{
-                NSLog(@"NOT BLANK");
-                NSLog(@"Object: %@", [self.positionArray objectAtIndex:0]);
-                self.collision = true;
-            }
-            
-        }
-        else if ( point.y < 96) {
-            NSLog(@"array index 3");
-            
-            if ([self.positionArray objectAtIndex:3] ==  self.blank) {
-                NSLog(@"Blank, replacing");
-                [self.positionArray replaceObjectAtIndex:3 withObject:currentPlayer];
-            }
-            else{
-                NSLog(@"NOT BLANK");
-                NSLog(@"Object: %@", [self.positionArray objectAtIndex:3]);
-                self.collision = true;
-            }
-            
-            
-            
-        }
-        else if ( point.y < 145) {
-            
-            
-            NSLog(@"array index 6");
-            
-            if ([self.positionArray objectAtIndex:6] ==  self.blank) {
-                NSLog(@"Blank, replacing");
-                [self.positionArray replaceObjectAtIndex:6 withObject:currentPlayer];
-            }
-            else{
-                NSLog(@"NOT BLANK");
-                NSLog(@"Object: %@", [self.positionArray objectAtIndex:0]);
-                self.collision = true;
-            }
-            
-        }
-        
-        
-    }
-    
-    // Column 2
-    else if (point.x < 96){
-        if ( point.y < 49) {
-            NSLog(@"array index 1");
-            if ([self.positionArray objectAtIndex:1] ==  self.blank) {
-                NSLog(@"Blank, replacing");
-                [self.positionArray replaceObjectAtIndex:1 withObject:currentPlayer];
-            }
-            else{
-                NSLog(@"NOT BLANK");
-                NSLog(@"Object: %@", [self.positionArray objectAtIndex:1]);
-                self.collision = true;
-            }
-        }
-        else if ( point.y < 96) {
-            NSLog(@"array index 4");
-            if ([self.positionArray objectAtIndex:4] ==  self.blank) {
-                NSLog(@"Blank, replacing");
-                [self.positionArray replaceObjectAtIndex:4 withObject:currentPlayer];
-            }
-            else{
-                NSLog(@"NOT BLANK");
-                NSLog(@"Object: %@", [self.positionArray objectAtIndex:4]);
-                self.collision = true;
-            }
-        }
-        else if ( point.y < 145) {
-            NSLog(@"array index 7");
-            if ([self.positionArray objectAtIndex:7] ==  self.blank) {
-                NSLog(@"Blank, replacing");
-                [self.positionArray replaceObjectAtIndex:7 withObject:currentPlayer];
-            }
-            else{
-                NSLog(@"NOT BLANK");
-                NSLog(@"Object: %@", [self.positionArray objectAtIndex:7]);
-                self.collision = true;
-            }
-        }
-    }
-    
-    // Column 3
-    else if (point.x < 145){
-        if ( point.y < 49) {
-            NSLog(@"array index 2");
-            if ([self.positionArray objectAtIndex:2] ==  self.blank) {
-                NSLog(@"Blank, replacing");
-                [self.positionArray replaceObjectAtIndex:2 withObject:currentPlayer];
-            }
-            else{
-                NSLog(@"NOT BLANK");
-                NSLog(@"Object: %@", [self.positionArray objectAtIndex:2]);
-                self.collision = true;
-            }
-        }
-        else if ( point.y < 96) {
-            NSLog(@"array index 5");
-            if ([self.positionArray objectAtIndex:5] ==  self.blank) {
-                NSLog(@"Blank, replacing");
-                [self.positionArray replaceObjectAtIndex:5 withObject:currentPlayer];
-            }
-            else{
-                NSLog(@"NOT BLANK");
-                NSLog(@"Object: %@", [self.positionArray objectAtIndex:5]);
-                self.collision = true;
-            }
-        }
-        else if ( point.y < 145) {
-            NSLog(@"array index 8");
-            if ([self.positionArray objectAtIndex:8] ==  self.blank) {
-                NSLog(@"Blank, replacing");
-                [self.positionArray replaceObjectAtIndex:8 withObject:currentPlayer];
-            }
-            else{
-                NSLog(@"NOT BLANK");
-                NSLog(@"Object: %@", [self.positionArray objectAtIndex:8]);
-                self.collision = true;
-            }
-        }
-    }
-
-    
-}
 
 - (void)didReceiveMemoryWarning
 {

@@ -22,33 +22,25 @@ typedef NS_ENUM(int, rotations){
     flipped
 };
 
--(void)buildMasterArray;
--(void)updateSubArray: (NSMutableArray *)subArray from:(int)subSquare;
--(void)setSubArrays: (NSMutableArray *)subArray from:(int)subSquare;
-
+@property (nonatomic) BOOL playerDidRotate;
 @property (nonatomic) NSMutableArray *gameBoard;
 @property (nonatomic) int currentPlayer;
-
 @property (nonatomic) NSMutableArray *masterArray;
-
--(NSMutableArray *)updateThisArray: (int)subSquare;
-
 @property(nonatomic) NSMutableArray *subArray0;
 @property(nonatomic) NSMutableArray *subArray1;
 @property(nonatomic) NSMutableArray *subArray2;
 @property(nonatomic) NSMutableArray *subArray3;
 
-
--(void)checkForWinner;
--(void)switchPlayers;
--(void)createGridArray: (UIView *)view;
 +(PentagoBrain *) sharedInstance;
 
 -(NSMutableArray *)rotateLeft: (NSMutableArray *)subArray inSubView:(int)subView;
 -(NSMutableArray *)rotateRight: (NSMutableArray *)subArray inSubView:(int)subView;
-
-
--(NSMutableArray *)flipRotation: (NSMutableArray *)subArray;
-
+-(NSMutableArray *)updateThisArray: (int)subSquare;
+-(void)checkForWinner;
+-(void)switchPlayers;
+-(void)createGridArray: (UIView *)view;
+-(void)updateSubArray: (NSMutableArray *)subArray from:(int)subSquare;
+-(void)setSubArrays: (NSMutableArray *)subArray from:(int)subSquare;
+-(BOOL)checkPlayerRotation: (BOOL)isRotated;
 
 @end

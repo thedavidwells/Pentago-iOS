@@ -90,6 +90,7 @@ UILabel *label;
 
 +(void)changeGameStateLabel
 {
+
     if ([[PentagoBrain sharedInstance ]currentPlayer] == player1) {
         label.text = @"Player 1, place your donut!";
     }
