@@ -573,6 +573,7 @@ const int TOP_MARGIN = 50;
     }
     self.playerDidRotate = [self.pBrain checkPlayerRotation:TRUE];
     //[self updateTempArray];
+    [self.pBrain checkForWinner];
 }
 
 
@@ -609,6 +610,7 @@ const int TOP_MARGIN = 50;
     }
     self.playerDidRotate = [self.pBrain checkPlayerRotation:TRUE];
     //[self updateTempArray];
+    [self.pBrain checkForWinner];
 }
 
 
