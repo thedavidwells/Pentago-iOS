@@ -84,6 +84,7 @@
     else if (self.currentPlayer == player2){
         self.currentPlayer = player1;
     }
+    self.playerDidRotate = FALSE;
 }
 
 //  Initialize all of the sub arrays here in the model

@@ -222,16 +222,14 @@ const int TOP_MARGIN = 50;
                              (int) (p.y / squareWidth) * squareWidth,
                              squareWidth,
                              squareWidth);
-    // Switch players
+    // Switch players game piece
     if (self.pBrain.currentPlayer == player1) {
         iView.image = [UIImage imageNamed:@"donut_strawberry.png"];
         NSLog(@"Player 1's turn");
-         self.playerDidRotate = [self.pBrain checkPlayerRotation:FALSE];
     }
     else if (self.pBrain.currentPlayer == player2){
         iView.image = [UIImage imageNamed:@"donut_chocolate.png"];
         NSLog(@"Player 2's turn");
-        self.playerDidRotate = [self.pBrain checkPlayerRotation:FALSE];
     }
     
     self.collision = false;
