@@ -69,8 +69,8 @@ const int TOP_MARGIN = 50;
     
     _gridFrame = CGRectMake(0, 0, widthOfSubsquare, widthOfSubsquare);
     self.gridView = [[UIView alloc] initWithFrame: _gridFrame];
-    [self.gridView addGestureRecognizer:self.rightSwipe];
-    [self.gridView addGestureRecognizer:self.leftSwipe];
+    [self.view addGestureRecognizer:self.rightSwipe];
+    [self.view addGestureRecognizer:self.leftSwipe];
     [self.view addSubview: self.gridView];
     
     self.gridImageView.frame = CGRectMake(0, 0, 145, 145);
@@ -214,7 +214,7 @@ const int TOP_MARGIN = 50;
     
     int squareWidth = widthOfSubsquare / 3;
     //  NSLog(@"TAP LOCATION: %d , %d", (int) (p.x / squareWidth), (int) (p.y / squareWidth));
-    p = [self compensateForRotation:p withSquareWidth:squareWidth];
+    p = [self.pBrain compensateForRotation:p withSquareWidth:squareWidth rotations:self.rotations];
     
     // The board is divided into nine equally sized squares and thus width = height.
     UIImageView *iView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"donut_chocolate.png"]];
@@ -233,7 +233,7 @@ const int TOP_MARGIN = 50;
     }
     
     self.collision = false;
-    [self determineArrayPosition:original];
+    [self determineArrayPosition:original subView:subsquareNumber];
         if (self.collision == false) {
         
         self.ballLayer = [CALayer layer];
@@ -243,7 +243,7 @@ const int TOP_MARGIN = 50;
         [self.gridView.layer addSublayer:self.ballLayer];
         
         [self.pBrain switchPlayers];
-        self.playerDidRotate = [self.pBrain checkPlayerRotation:FALSE];
+        self.pBrain.playerDidRotate = FALSE;
         [PentagoViewController changeGameStateLabel];
     }
     else{
@@ -257,197 +257,13 @@ const int TOP_MARGIN = 50;
 
 
 
-//  Compensate for Rotation
-//  This handles the fact that the view's coordinates (where the tap point is captured)
-//  stays the same, while the gridView rotates and those coordinates change.
-//  There needed to be a mapping from the views normal coordinate system to the
-//  rotated coordinate system of the gridView so that the game piece could be placed at
-//  the correct location.
--(CGPoint)compensateForRotation: (CGPoint) point withSquareWidth: (int) squareWidth
-{
-    // row or column
-    int zero = 25;
-    int one = 75;
-    int two = 140;
-    
-    //  Adjust for rotation
-    if (self.rotations == 1 || self.rotations == -3) {
-        CGPoint temp = point;
-
-        // col 1
-        if (temp.x < 49) {
-            if (temp.y < 49) {
-                point.x = point.x;
-                point.y = 145 - temp.y;
-            }
-            else if(temp.y < 96){
-                point.x = 75;
-                point.y = 140;
-            }
-            else if(temp.y < 145){
-                point.x = 140;
-                point.y = 140;
-            }
-            return  point;
-        }
-        
-        // col 2
-        else if (temp.x < 96) {
-            if (temp.y < 49) {
-                point.x = zero;
-                point.y = one;
-            }
-            else if(temp.y < 96){
-                point.x = one;
-                point.y = one;
-            }
-            else if(temp.y < 145){
-                point.x = two;
-                point.y = one;
-            }
-            return point;
-        }
-        
-        // col 3
-        else if (temp.x < 145) {
-            if (temp.y < 49) {
-                point.x = zero;
-                point.y = zero;
-            }
-            else if(temp.y < 96){
-                point.x = one;
-                point.y = zero;
-            }
-            else if(temp.y < 145){
-                point.x = two;
-                point.y = zero;
-            }
-            return point;
-        }
-    }
-    
-        //  Adjust for rotation
-        else if (self.rotations == 2 || self.rotations == -2) {
-            CGPoint temp = point;
-            
-            // col 1
-            if (temp.x < 49) {
-                if (temp.y < 49) {
-                    point.x = two;
-                    point.y = two;
-                }
-                else if(temp.y < 96){
-                    point.x = two;
-                    point.y = one;
-                }
-                else if(temp.y < 145){
-                    point.x = two;
-                    point.y = zero;
-                }
-                return  point;
-            }
-            
-            // col 2
-            else if (temp.x < 96) {
-                if (temp.y < 49) {
-                    point.x = one;
-                    point.y = two;
-                }
-                else if(temp.y < 96){
-                    point.x = one;
-                    point.y = one;
-                }
-                else if(temp.y < 145){
-                    point.x = one;
-                    point.y = zero;
-                }
-                return point;
-            }
-            
-            // col 3
-            else if (temp.x < 145) {
-                if (temp.y < 49) {
-                    point.x = zero;
-                    point.y = two;
-                }
-                else if(temp.y < 96){
-                    point.x = zero;
-                    point.y = one;
-                }
-                else if(temp.y < 145){
-                    point.x = zero;
-                    point.y = zero;
-                }
-                return point;
-            }
-        }
-
-        
-            //  Adjust for rotation
-            else if (self.rotations == 3 || self.rotations == -1) {
-                CGPoint temp = point;
-                
-                // col 1
-                if (temp.x < 49) {
-                    if (temp.y < 49) {
-                        point.x = two;
-                        point.y = zero;
-                    }
-                    else if(temp.y < 96){
-                        point.x = one;
-                        point.y = zero;
-                    }
-                    else if(temp.y < 145){
-                        point.x = zero;
-                        point.y = zero;
-                    }
-                    return  point;
-                }
-                
-                // col 2
-                else if (temp.x < 96) {
-                    if (temp.y < 49) {
-                        point.x = two;
-                        point.y = one;
-                    }
-                    else if(temp.y < 96){
-                        point.x = one;
-                        point.y = one;
-                    }
-                    else if(temp.y < 145){
-                        point.x = zero;
-                        point.y = one;
-                    }
-                    return point;
-                }
-                
-                // col 3
-                else if (temp.x < 145) {
-                    if (temp.y < 49) {
-                        point.x = two;
-                        point.y = two;
-                    }
-                    else if(temp.y < 96){
-                        point.x = one;
-                        point.y = two;
-                    }
-                    else if(temp.y < 145){
-                        point.x = zero;
-                        point.y = two;
-                    }
-                    return point;
-                }
-            }
-    return point;
-}
-
 
 
 
 //  Determine Array Position
 //  This method uses the true coordinates of the view to determine where to
 //  put the players value in the array.
--(void)determineArrayPosition: (CGPoint)point
+-(void)determineArrayPosition: (CGPoint)point subView: (int)subSquareNumber
 {
     NSNumber *currentPlayer = [NSNumber numberWithInt:self.pBrain.currentPlayer];
     [self updateTempArray];
@@ -551,7 +367,9 @@ const int TOP_MARGIN = 50;
 -(void) didSwipeRight: (UISwipeGestureRecognizer *) recongizer
 {
     NSLog(@"Did swipe right in the the %ld view", (long)[self.view tag] );
-    if (self.playerDidRotate) {
+    if ( [self.pBrain checkPlayerRotation] ) {
+        [self.view bringSubviewToFront:self.gridView];
+        [self.view addGestureRecognizer:self.rightSwipe];
         return;
     }
     CGAffineTransform currTransform = self.gridView.layer.affineTransform;
@@ -560,8 +378,7 @@ const int TOP_MARGIN = 50;
         self.gridView.layer.affineTransform = newTransform;
     }];
 
-    [self.view bringSubviewToFront:self.gridView];
-    [self.view addGestureRecognizer:self.rightSwipe];
+
     
     [self.positionArray setArray:[self.pBrain rotateRight:self.positionArray inSubView:subsquareNumber]];
     [self.pBrain updateSubArray:self.positionArray from:subsquareNumber];
@@ -571,9 +388,14 @@ const int TOP_MARGIN = 50;
     if (self.rotations == 4 || self.rotations == -4) {
         self.rotations = 0;
     }
-    self.playerDidRotate = [self.pBrain checkPlayerRotation:TRUE];
+    
+    
+    self.pBrain.playerDidRotate = TRUE;
     //[self updateTempArray];
     [self.pBrain checkForWinner];
+    
+    [self.view bringSubviewToFront:self.gridView];
+    [self.view addGestureRecognizer:self.rightSwipe];
 }
 
 
@@ -586,7 +408,9 @@ const int TOP_MARGIN = 50;
 -(void) didSwipeLeft: (UISwipeGestureRecognizer *) recongizer
 {
     NSLog(@"Did swipe left in the the %ld view", (long)[self.view tag] );
-    if (self.playerDidRotate) {
+    if ( [self.pBrain checkPlayerRotation] ) {
+        [self.view bringSubviewToFront:self.gridView];
+        [self.view addGestureRecognizer:self.leftSwipe];
         return;
     }
     CGAffineTransform currTransform = self.gridView.layer.affineTransform;
@@ -595,9 +419,7 @@ const int TOP_MARGIN = 50;
         self.gridView.layer.affineTransform = newTransform;
     }];
     
-    [self.view bringSubviewToFront:self.gridView];
-    [self.view addGestureRecognizer:self.leftSwipe];
-    
+
     
     [self.positionArray setArray:[self.pBrain rotateLeft:self.positionArray inSubView:subsquareNumber]];
     [self.pBrain updateSubArray:self.positionArray from:subsquareNumber];
@@ -608,9 +430,14 @@ const int TOP_MARGIN = 50;
     if (self.rotations == 4 || self.rotations == -4) {
         self.rotations = 0;
     }
-    self.playerDidRotate = [self.pBrain checkPlayerRotation:TRUE];
+    
+    self.pBrain.playerDidRotate = TRUE;
     //[self updateTempArray];
     [self.pBrain checkForWinner];
+    
+    [self.view bringSubviewToFront:self.gridView];
+    [self.view addGestureRecognizer:self.leftSwipe];
+    
 }
 
 

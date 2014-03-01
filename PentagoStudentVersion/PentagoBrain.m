@@ -44,14 +44,8 @@
 //  Check Player Rotation
 //  Checks if the board has been rotated.
 //  This enforces the limit of 1 rotation per turn (0 rotations is okay).
--(BOOL)checkPlayerRotation: (BOOL)isRotated
+-(BOOL)checkPlayerRotation
 {
-    if (isRotated) {
-        self.playerDidRotate = TRUE;
-    }
-    else if(!isRotated){
-        self.playerDidRotate = FALSE;
-    }
     return self.playerDidRotate;
 }
 
@@ -328,23 +322,13 @@
 //  it calls this method to alert the user who has just won.
 -(void)alertTheWinner
 {
-    
-    if (self.currentPlayer == player1) {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"WINNER!"
-                                                        message:@"Player 1 has won!"
+                                                        message:[NSString stringWithFormat:@"Player %i has won!", self.currentPlayer+1]
                                                        delegate:nil
                                               cancelButtonTitle:@"YAY!"
                                               otherButtonTitles:nil];
         [alert show];
-    }
-    else if (self.currentPlayer == player2) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"WINNER!"
-                                                        message:@"Player 2 has won!"
-                                                       delegate:nil
-                                              cancelButtonTitle:@"YAY!"
-                                              otherButtonTitles:nil];
-        [alert show];
-    }
+
     
     
 }
@@ -507,6 +491,209 @@
     
     
 }  // End check for winner method
+
+
+
+
+
+
+
+
+
+
+
+
+//  Compensate for Rotation
+//  This handles the fact that the view's coordinates (where the tap point is captured)
+//  stays the same, while the gridView rotates and those coordinates change.
+//  There needed to be a mapping from the views normal coordinate system to the
+//  rotated coordinate system of the gridView so that the game piece could be placed at
+//  the correct location.
+-(CGPoint)compensateForRotation: (CGPoint) point withSquareWidth: (int) squareWidth rotations: (int)rotations
+{
+    // row or column
+    int zero = 25;
+    int one = 75;
+    int two = 140;
+    
+    //  Adjust for rotation
+    if (rotations == 1 || rotations == -3) {
+        CGPoint temp = point;
+        
+        // col 1
+        if (temp.x < 49) {
+            if (temp.y < 49) {
+                point.x = point.x;
+                point.y = 145 - temp.y;
+            }
+            else if(temp.y < 96){
+                point.x = 75;
+                point.y = 140;
+            }
+            else if(temp.y < 145){
+                point.x = 140;
+                point.y = 140;
+            }
+            return  point;
+        }
+        
+        // col 2
+        else if (temp.x < 96) {
+            if (temp.y < 49) {
+                point.x = zero;
+                point.y = one;
+            }
+            else if(temp.y < 96){
+                point.x = one;
+                point.y = one;
+            }
+            else if(temp.y < 145){
+                point.x = two;
+                point.y = one;
+            }
+            return point;
+        }
+        
+        // col 3
+        else if (temp.x < 145) {
+            if (temp.y < 49) {
+                point.x = zero;
+                point.y = zero;
+            }
+            else if(temp.y < 96){
+                point.x = one;
+                point.y = zero;
+            }
+            else if(temp.y < 145){
+                point.x = two;
+                point.y = zero;
+            }
+            return point;
+        }
+    }
+    
+    //  Adjust for rotation
+    else if (rotations == 2 || rotations == -2) {
+        CGPoint temp = point;
+        
+        // col 1
+        if (temp.x < 49) {
+            if (temp.y < 49) {
+                point.x = two;
+                point.y = two;
+            }
+            else if(temp.y < 96){
+                point.x = two;
+                point.y = one;
+            }
+            else if(temp.y < 145){
+                point.x = two;
+                point.y = zero;
+            }
+            return  point;
+        }
+        
+        // col 2
+        else if (temp.x < 96) {
+            if (temp.y < 49) {
+                point.x = one;
+                point.y = two;
+            }
+            else if(temp.y < 96){
+                point.x = one;
+                point.y = one;
+            }
+            else if(temp.y < 145){
+                point.x = one;
+                point.y = zero;
+            }
+            return point;
+        }
+        
+        // col 3
+        else if (temp.x < 145) {
+            if (temp.y < 49) {
+                point.x = zero;
+                point.y = two;
+            }
+            else if(temp.y < 96){
+                point.x = zero;
+                point.y = one;
+            }
+            else if(temp.y < 145){
+                point.x = zero;
+                point.y = zero;
+            }
+            return point;
+        }
+    }
+    
+    
+    //  Adjust for rotation
+    else if (rotations == 3 || rotations == -1) {
+        CGPoint temp = point;
+        
+        // col 1
+        if (temp.x < 49) {
+            if (temp.y < 49) {
+                point.x = two;
+                point.y = zero;
+            }
+            else if(temp.y < 96){
+                point.x = one;
+                point.y = zero;
+            }
+            else if(temp.y < 145){
+                point.x = zero;
+                point.y = zero;
+            }
+            return  point;
+        }
+        
+        // col 2
+        else if (temp.x < 96) {
+            if (temp.y < 49) {
+                point.x = two;
+                point.y = one;
+            }
+            else if(temp.y < 96){
+                point.x = one;
+                point.y = one;
+            }
+            else if(temp.y < 145){
+                point.x = zero;
+                point.y = one;
+            }
+            return point;
+        }
+        
+        // col 3
+        else if (temp.x < 145) {
+            if (temp.y < 49) {
+                point.x = two;
+                point.y = two;
+            }
+            else if(temp.y < 96){
+                point.x = one;
+                point.y = two;
+            }
+            else if(temp.y < 145){
+                point.x = zero;
+                point.y = two;
+            }
+            return point;
+        }
+    }
+    return point;
+}
+
+
+
+
+
+
+
+
 
 
 

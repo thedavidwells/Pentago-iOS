@@ -31,6 +31,7 @@ typedef NS_ENUM(int, rotations){
 @property(nonatomic) NSMutableArray *subArray2;
 @property(nonatomic) NSMutableArray *subArray3;
 
+
 +(PentagoBrain *) sharedInstance;
 
 -(NSMutableArray *)rotateLeft: (NSMutableArray *)subArray inSubView:(int)subView;
@@ -41,6 +42,7 @@ typedef NS_ENUM(int, rotations){
 -(void)createGridArray: (UIView *)view;
 -(void)updateSubArray: (NSMutableArray *)subArray from:(int)subSquare;
 -(void)setSubArrays: (NSMutableArray *)subArray from:(int)subSquare;
--(BOOL)checkPlayerRotation: (BOOL)isRotated;
+-(BOOL)checkPlayerRotation;
+-(CGPoint)compensateForRotation: (CGPoint) point withSquareWidth: (int) squareWidth rotations: (int)rotations;
 
 @end
